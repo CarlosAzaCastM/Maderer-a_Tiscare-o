@@ -151,6 +151,96 @@ public class VarianteDAO {
         }
     }
     
+    // --- MÉTODOS PARA FILTROS EN CASCADA (VENTAS) ---
+
+    // 1. Traer nombres de productos únicos (Tabla, Polin, etc.)
+    public List<String> obtenerNombresProductos() {
+        List<String> lista = new ArrayList<>();
+        String sql = "SELECT DISTINCT nombre FROM productos ORDER BY nombre";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) lista.add(rs.getString("nombre"));
+        } catch (Exception e) { System.out.println("Error nombres: " + e.getMessage()); }
+        return lista;
+    }
+
+    // 2. Traer Clases basado en el Producto seleccionado
+    public List<String> obtenerClasesPorProducto(String nombreProducto) {
+        List<String> lista = new ArrayList<>();
+        String sql = "SELECT DISTINCT v.clase FROM variantes v " +
+                     "INNER JOIN productos p ON v.id_producto = p.id_producto " +
+                     "WHERE p.nombre = ? ORDER BY v.clase";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombreProducto);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) lista.add(rs.getString("clase"));
+        } catch (Exception e) { System.out.println("Error clases: " + e.getMessage()); }
+        return lista;
+    }
+
+    // 3. Traer Medidas basado en Producto y Clase
+    public List<String> obtenerMedidas(String nombreProducto, String clase) {
+        List<String> lista = new ArrayList<>();
+        String sql = "SELECT DISTINCT v.medida FROM variantes v " +
+                     "INNER JOIN productos p ON v.id_producto = p.id_producto " +
+                     "WHERE p.nombre = ? AND v.clase = ? ORDER BY v.medida";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombreProducto);
+            ps.setString(2, clase);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) lista.add(rs.getString("medida"));
+        } catch (Exception e) { System.out.println("Error medidas: " + e.getMessage()); }
+        return lista;
+    }
+
+    // 4. Traer Grosores basado en Producto, Clase y Medida
+    public List<String> obtenerGrosores(String nombreProducto, String clase, String medida) {
+        List<String> lista = new ArrayList<>();
+        String sql = "SELECT DISTINCT v.grosor FROM variantes v " +
+                     "INNER JOIN productos p ON v.id_producto = p.id_producto " +
+                     "WHERE p.nombre = ? AND v.clase = ? AND v.medida = ? ORDER BY v.grosor";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombreProducto);
+            ps.setString(2, clase);
+            ps.setString(3, medida);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) lista.add(rs.getString("grosor"));
+        } catch (Exception e) { System.out.println("Error grosores: " + e.getMessage()); }
+        return lista;
+    }
+
+    // 5. ¡EL IMPORTANTE! Buscar la variante exacta con todos los filtros
+    public Variante buscarVarianteEspecifica(String nombre, String clase, String medida, String grosor) {
+        Variante v = null;
+        String sql = "SELECT v.*, p.nombre FROM variantes v " +
+                     "INNER JOIN productos p ON v.id_producto = p.id_producto " +
+                     "WHERE p.nombre = ? AND v.clase = ? AND v.medida = ? AND v.grosor = ?";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombre);
+            ps.setString(2, clase);
+            ps.setString(3, medida);
+            ps.setString(4, grosor);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                v = new Variante();
+                v.setId(rs.getInt("id_variante"));
+                v.setNombreProducto(rs.getString("nombre"));
+                v.setClase(rs.getString("clase"));
+                v.setMedida(rs.getString("medida"));
+                v.setGrosor(rs.getString("grosor"));
+                v.setPiesPorPieza(rs.getDouble("pies_por_pieza"));
+                v.setCostoCompra(rs.getDouble("costo_compra"));
+                v.setPrecioVenta(rs.getDouble("precio_venta"));
+                v.setStockPiezas(rs.getInt("stock_piezas"));
+            }
+        } catch (Exception e) { System.out.println("Error buscando variante: " + e.getMessage()); }
+        return v;
+    }
     
     
 }

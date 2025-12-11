@@ -14,7 +14,7 @@ public class JFrameInventario extends javax.swing.JFrame {
     DefaultTableModel modelo;
     List<Variante> listaActual;
     private Usuario usuarioActual;
-    
+
     public JFrameInventario(Usuario usuario) {
         initComponents();
         this.setExtendedState(MAXIMIZED_BOTH);
