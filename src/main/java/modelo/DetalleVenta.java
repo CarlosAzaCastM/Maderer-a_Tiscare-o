@@ -1,6 +1,8 @@
 package modelo;
 
 public class DetalleVenta {
+    private int idDetalle;
+    private int idVenta;
     private int idVariante;
     private String nombre;
     private String medida;
@@ -8,10 +10,15 @@ public class DetalleVenta {
     private String grosor;
     private double ftTotal;
     private int cantidad;
-    private double precioVenta; 
-    private double subtotal;
+    private double precioVenta;
     private double costoCompra;
+    private double subtotal;
 
+    // Constructor vacío
+    public DetalleVenta() {
+    }
+
+    // Constructor con parámetros
     public DetalleVenta(Variante v, int cantidad) {
         this.idVariante = v.getId();
         this.nombre = v.getNombreProducto();
@@ -19,87 +26,69 @@ public class DetalleVenta {
         this.clase = v.getClase();
         this.grosor = v.getGrosor();
         
-        String[] medidaPartes = this.medida.split("x");
-        String part1Medida = medidaPartes[0]; 
-        String part2Medida = medidaPartes[1];
-        int part1EnteroMedida = Integer.parseInt(part1Medida);
-        int part2EnteroMedida = Integer.parseInt(part2Medida);
-        
         this.cantidad = cantidad;
+        this.costoCompra = v.getCostoCompra(); 
+        this.precioVenta = v.getPrecioVenta();
         
-        if (this.grosor.contains("/") && this.grosor.split("/").length == 2) {
-
-            String[] partes = this.grosor.split("/");
-            try {
-                float numerador = Float.parseFloat(partes[0]);
-                float denominador = Float.parseFloat(partes[1]);
-
-                float grosorFloat = numerador / denominador;   
-
-                this.ftTotal = ((grosorFloat * part1EnteroMedida * part2EnteroMedida) / 12) * this.cantidad;
-
-            } catch (NumberFormatException e) {
-                System.out.println("Error: formato de fracción inválido");
-            }
-
-        } else {
-            // No es fracción → número normal
-            float grosorFloat = Float.parseFloat(this.grosor);
-            this.ftTotal = ((grosorFloat * part1EnteroMedida * part2EnteroMedida) / 12) * this.cantidad;
-        }
+        // Calcular ftTotal
+        calcularFtTotal();
         
-        this.costoCompra = v.getCostoCompra();
-        this.precioVenta = v.getPrecioVenta(); // Precio sugerido por defecto
+        // Calcular subtotal inicial
         this.subtotal = cantidad * v.getPrecioVenta();
     }
     
-    
-    // Getters y Setters...
-    // IMPORTANTE: Al hacer setPrecioVenta o setCantidad, recalcula el subtotal.
-    public void setPrecioVenta(double precio) {
-        this.precioVenta = precio;
-        this.subtotal = this.cantidad * precio;
-    }
-    
-    public double getPrecioVenta(){
-        return this.precioVenta;
-    }
+    // MÉTODO PARA RECALCULAR EL FT TOTAL (pies cuadrados)
+    private void calcularFtTotal() {
+        if (this.medida == null || this.grosor == null) return;
+        
+        String[] medidaPartes = this.medida.split("x");
+        
+        if (medidaPartes.length != 2) return;
+        
+        String part1Medida = medidaPartes[0]; 
+        String part2Medida = medidaPartes[1];
 
-    public double getCostoCompra() {
-        return costoCompra;
-    }
-
-    public void setCostoCompra(double costoCompra) {
-        this.costoCompra = costoCompra;
-    }
-    
-    
-
-    public String getClase() {
-        return clase;
-    }
-
-    public void setClase(String clase) {
-        this.clase = clase;
-    }
-
-    public String getGrosor() {
-        return grosor;
-    }
-
-    public void setGrosor(String grosor) {
-        this.grosor = grosor;
-    }
-
-    public double getFtTotal() {
-        return ftTotal;
-    }
-
-    public void setFtTotal(double ftTotal) {
-        this.ftTotal = ftTotal;
+        int part1EnteroMedida = Integer.parseInt(part1Medida);
+        int part2EnteroMedida = Integer.parseInt(part2Medida);
+        
+        try {
+            if (this.grosor.contains("/") && this.grosor.split("/").length == 2) {
+                String[] partes = this.grosor.split("/");
+                float numerador = Float.parseFloat(partes[0]);
+                float denominador = Float.parseFloat(partes[1]);
+                float grosorFloat = numerador / denominador;   
+                this.ftTotal = ((grosorFloat * part1EnteroMedida * part2EnteroMedida) / 12) * this.cantidad;
+            } else {
+                float grosorFloat = Float.parseFloat(this.grosor);
+                this.ftTotal = ((grosorFloat * part1EnteroMedida * part2EnteroMedida) / 12) * this.cantidad;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error en cálculo de ftTotal: " + e.getMessage());
+            this.ftTotal = 0;
+        }
     }
     
-    
+    // MÉTODO PARA RECALCULAR EL SUBTOTAL
+    public void recalcularSubtotal() {
+        this.subtotal = this.cantidad * this.precioVenta;
+    }
+
+    // Getters y Setters
+    public int getIdDetalle() {
+        return idDetalle;
+    }
+
+    public void setIdDetalle(int idDetalle) {
+        this.idDetalle = idDetalle;
+    }
+
+    public int getIdVenta() {
+        return idVenta;
+    }
+
+    public void setIdVenta(int idVenta) {
+        this.idVenta = idVenta;
+    }
 
     public int getIdVariante() {
         return idVariante;
@@ -107,6 +96,18 @@ public class DetalleVenta {
 
     public void setIdVariante(int idVariante) {
         this.idVariante = idVariante;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+        // Recalcular ftTotal cuando cambia la cantidad
+        calcularFtTotal();
+        // Recalcular subtotal automáticamente
+        recalcularSubtotal();
     }
 
     public String getNombre() {
@@ -123,42 +124,52 @@ public class DetalleVenta {
 
     public void setMedida(String medida) {
         this.medida = medida;
+        // Recalcular ftTotal si cambia la medida
+        calcularFtTotal();
     }
 
-    public int getCantidad() {
-        return cantidad;
+    public String getClase() {
+        return clase;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-        this.subtotal = cantidad * this.precioVenta;
-        
-        String[] medidaPartes = this.medida.split("x");
-        String part1Medida = medidaPartes[0]; 
-        String part2Medida = medidaPartes[1];
-        int part1EnteroMedida = Integer.parseInt(part1Medida);
-        int part2EnteroMedida = Integer.parseInt(part2Medida);
-        
-        if (this.grosor.contains("/") && this.grosor.split("/").length == 2) {
+    public void setClase(String clase) {
+        this.clase = clase;
+    }
 
-            String[] partes = this.grosor.split("/");
-            try {
-                float numerador = Float.parseFloat(partes[0]);
-                float denominador = Float.parseFloat(partes[1]);
+    public String getGrosor() {
+        return grosor;
+    }
 
-                float grosorFloat = numerador / denominador;
+    public void setGrosor(String grosor) {
+        this.grosor = grosor;
+        // Recalcular ftTotal si cambia el grosor
+        calcularFtTotal();
+    }
 
-                this.ftTotal = ((grosorFloat * part1EnteroMedida * part2EnteroMedida) / 12) * this.cantidad;
+    public double getFtTotal() {
+        return ftTotal;
+    }
 
-            } catch (NumberFormatException e) {
-                System.out.println("Error: formato de fracción inválido");
-            }
+    public void setFtTotal(double ftTotal) {
+        this.ftTotal = ftTotal;
+    }
 
-        } else {
-            // No es fracción → número normal
-            float grosorFloat = Float.parseFloat(this.grosor);
-            this.ftTotal = ((grosorFloat * part1EnteroMedida * part2EnteroMedida) / 12) * this.cantidad;
-        }
+    public double getPrecioVenta() {
+        return precioVenta;
+    }
+
+    public void setPrecioVenta(double precioVenta) {
+        this.precioVenta = precioVenta;
+        // Recalcular subtotal automáticamente cuando cambia el precio
+        recalcularSubtotal();
+    }
+
+    public double getCostoCompra() {
+        return costoCompra;
+    }
+
+    public void setCostoCompra(double costoCompra) {
+        this.costoCompra = costoCompra;
     }
 
     public double getSubtotal() {
@@ -168,6 +179,4 @@ public class DetalleVenta {
     public void setSubtotal(double subtotal) {
         this.subtotal = subtotal;
     }
-    
-    
 }

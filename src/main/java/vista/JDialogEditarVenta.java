@@ -1,4 +1,3 @@
-
 package vista;
 
 import dao.EntradaDAO;
@@ -7,14 +6,12 @@ import javax.swing.JOptionPane;
 import modelo.DetalleVenta;
 import modelo.Variante;
 
-
 public class JDialogEditarVenta extends javax.swing.JDialog {
     
-    private DetalleVenta itemActual; // CAMBIO: Usamos DetalleVenta, no Variante
+    private DetalleVenta itemActual;
     private JFrameVenta padre;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JDialogEditarVenta.class.getName());
-
 
     public JDialogEditarVenta(java.awt.Frame parent, boolean modal, DetalleVenta item) {
         super(parent, modal);
@@ -39,7 +36,7 @@ public class JDialogEditarVenta extends javax.swing.JDialog {
             txtPrecio.setText(String.valueOf(itemActual.getPrecioVenta()));
             
             // Calcular pies actual
-            txtFtTotal.setText(String.valueOf(itemActual.getFtTotal()));
+            txtFtTotal.setText(String.format("%.2f", itemActual.getFtTotal()));
         }
     }
     
@@ -61,21 +58,24 @@ public class JDialogEditarVenta extends javax.swing.JDialog {
             VarianteDAO dao = new VarianteDAO();
             Variante v = dao.buscarVarianteEspecifica(prod, clase, medida, grosor);
             
-            if (v.getStockPiezas() < Integer.parseInt(txtCantidad.getText())) {
-                JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponibles: " + v.getStockPiezas());
+            if (v.getStockPiezas() < nuevaCant) {
+                JOptionPane.showMessageDialog(this, 
+                    "Stock insuficiente. Disponibles: " + v.getStockPiezas());
                 return;
             }
 
             // Actualizamos el objeto en memoria (el carrito)
+            // Usamos los setters que ahora recalcularán automáticamente el ftTotal y subtotal
             itemActual.setCantidad(nuevaCant);
-            itemActual.setPrecioVenta(nuevoPrecio); // Esto recalcula el subtotal internamente en DetalleVenta
-
+            itemActual.setPrecioVenta(nuevoPrecio);
+            
             // Avisamos al padre que se refresque
             padre.actualizarTablaVisual();
             this.dispose();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error en números: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

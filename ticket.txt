@@ -2,20 +2,19 @@
       MADERERIA TISCARENO       
 La mejor calidad al mejor precio
 --------------------------------
-Folio: #15                      
-Fecha: 10/12/2025 20:55         
-                                
+Folio: #20                      
+Fecha: 15/12/2025 13:41         
 --------------------------------
-CANT  DESCRIPCION          IMPOR
+CANT  DESCRIPCION       SUBTOTAL
 --------------------------------
-2     Tabla 10x10     $350      
+3     Tabla 12x16 7/8 3 $1200   
 --------------------------------
-Subtotal:       $1789.33        
-Descuento:     -$178.93         
-TOTAL:          $1610.00        
-EFECTIVO:       $1000.00        
-TARJETA:        $610.00         
+TOTAL:          $1200.00        
+EFECTIVO:       $1200.00        
+TARJETA:        $0.00           
 ================================
     GRACIAS POR SU COMPRA       
+                                
+                                
                                 
                                 

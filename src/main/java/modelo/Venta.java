@@ -11,6 +11,7 @@ public class Venta {
     private double pagoTarjeta;
     private int idUsuario;
     private String estatus;
+    private String nombreUsuario;
     private int folioTicket;
 
     // Constructor Vacío
@@ -26,6 +27,16 @@ public class Venta {
     public void setIdVenta(int idVenta) {
         this.idVenta = idVenta;
     }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+    
+    
 
     public String getFechaVenta() {
         return fechaVenta;

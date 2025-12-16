@@ -27,6 +27,7 @@ public class InicioSesion extends javax.swing.JFrame {
         txtContraseña = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         backgroundInicio.setBackground(new java.awt.Color(28, 28, 28));
         backgroundInicio.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());

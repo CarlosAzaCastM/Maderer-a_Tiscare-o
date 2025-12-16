@@ -3,6 +3,7 @@ package vista;
 
 import dao.VarianteDAO;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import modelo.Usuario;
 import modelo.Variante;
@@ -17,7 +18,7 @@ public class JFrameInventario extends javax.swing.JFrame {
 
     public JFrameInventario(Usuario usuario) {
         initComponents();
-        this.setExtendedState(MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         usuarioActual = usuario;
         configurarTabla(); // 1. Configuramos las columnas
         cargarTabla("");
@@ -33,6 +34,8 @@ public class JFrameInventario extends javax.swing.JFrame {
             }
         };
         jTableInventario.setModel(modelo);
+        
+        jTableInventario.setRowHeight(35);
         
         // Opcional: Ajustar ancho de columnas específicas (Ej: Cantidad más pequeña)
         jTableInventario.getColumnModel().getColumn(0).setPreferredWidth(50); // Cant
@@ -134,6 +137,7 @@ public class JFrameInventario extends javax.swing.JFrame {
 
         jPanel1.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 60, -1, -1));
 
+        jTableInventario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jTableInventario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -264,7 +268,9 @@ public class JFrameInventario extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 675, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();

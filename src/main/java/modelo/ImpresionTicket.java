@@ -43,17 +43,17 @@ public class ImpresionTicket {
         
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         printer.printTextWrap(5, 1, 0, anchoTicket, "Fecha: " + dtf.format(LocalDateTime.now()));
-        printer.printTextWrap(7, 1, 0, anchoTicket, "--------------------------------");
-        printer.printTextWrap(8, 1, 0, anchoTicket, "CANT  DESCRIPCION          IMPORTE");
-        printer.printTextWrap(9, 1, 0, anchoTicket, "--------------------------------");
+        printer.printTextWrap(6, 1, 0, anchoTicket, "--------------------------------");
+        printer.printTextWrap(7, 1, 0, anchoTicket, "CANT  DESCRIPCION       SUBTOTAL");
+        printer.printTextWrap(8, 1, 0, anchoTicket, "--------------------------------");
 
         // --- PRODUCTOS ---
-        int fila = 10;
+        int fila = 9;
         for (DetalleVenta item : productos) {
             // Formatear la línea completa manualmente
             String cantidad = String.format("%-5d", item.getCantidad());
-            String descripcion = item.getNombre() + " " + item.getMedida();
-            if (descripcion.length() > 15) descripcion = descripcion.substring(0, 15);
+            String descripcion = item.getNombre() + " " + item.getMedida()+" "+item.getGrosor()+" "+item.getClase();
+            if (descripcion.length() > 20) descripcion = descripcion.substring(0, 20);
             descripcion = String.format("%-15s", descripcion);
             String precio = String.format("$%.0f", item.getSubtotal());
             

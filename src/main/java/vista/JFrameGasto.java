@@ -2,7 +2,9 @@
 package vista;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.swing.JOptionPane;
 import modelo.Usuario;
 
 public class JFrameGasto extends javax.swing.JFrame {
@@ -16,8 +18,57 @@ public class JFrameGasto extends javax.swing.JFrame {
     public JFrameGasto(Usuario usuario) {
         initComponents();
         this.setExtendedState(MAXIMIZED_BOTH);
-        labelFecha.setText(fechaFormateada);
+        labelFechaActual.setText(fechaFormateada);
         usuarioActual = usuario;
+        iniciarLogica();
+    }
+    
+    private void iniciarLogica() {
+        // 1. Configuración inicial
+        jDateChooser.setVisible(false); // Porque el checkbox inicia seleccionado
+        txtDescripcionCorta.setVisible(false); // Oculto al inicio
+        jScrollPane1.setVisible(true); // TextArea visible al inicio (para notas generales)
+        
+        // 2. Evento del ComboBox
+        jComboBox1.addActionListener(e -> cambiarInterfazSegunTipo());
+    }
+    
+    private void cambiarInterfazSegunTipo() {
+        String tipoSeleccionado = (String) jComboBox1.getSelectedItem();
+        
+        if ("Empleado".equals(tipoSeleccionado)) {
+            // Caso Empleado
+            jLabelDescripcion_EmpleadoNombre.setText("Nombre Empleado");
+            jScrollPane1.setVisible(false); // Ocultar area grande
+            txtDescripcionCorta.setVisible(true); // Mostrar campo corto
+            txtDescripcionCorta.setText("");
+            
+        } else if ("Otro".equals(tipoSeleccionado)) {
+            // Caso Otro
+            jLabelDescripcion_EmpleadoNombre.setText("Especifique Gasto");
+            jScrollPane1.setVisible(false);
+            txtDescripcionCorta.setVisible(true);
+            txtDescripcionCorta.setText("");
+            
+        } else {
+            // Casos normales (Gasolina, Renta, etc.)
+            jLabelDescripcion_EmpleadoNombre.setText("Descripción / Notas");
+            jScrollPane1.setVisible(true); // Usamos el grande para detalles
+            txtDescripcionCorta.setVisible(false);
+            jTextArea1.setText("");
+        }
+    }
+    
+    private void limpiarFormulario() {
+        txtGastoMonto.setText("");
+        jTextArea1.setText("");
+        txtDescripcionCorta.setText("");
+        jComboBox1.setSelectedIndex(0);
+        jCheckBoxFechaActual.setSelected(true);
+        jDateChooser.setVisible(false);
+        jScrollPane1.setVisible(true); // Restaurar vista por defecto
+        txtDescripcionCorta.setVisible(false);
+        jLabelDescripcion_EmpleadoNombre.setText("Descripción");
     }
 
     @SuppressWarnings("unchecked")
@@ -25,36 +76,38 @@ public class JFrameGasto extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jLabelTitulo = new javax.swing.JLabel();
         btnHome = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        labelFecha = new javax.swing.JLabel();
+        labelFechaActual = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         btnRegistrarGasto = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
+        jLabelRegistrar = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        txtGastoMonto = new javax.swing.JTextField();
+        jLabelFecha = new javax.swing.JLabel();
         jCheckBoxFechaActual = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        jLabelTipoGasto = new javax.swing.JLabel();
+        jLabelGasto = new javax.swing.JLabel();
+        jLabelDescripcion_EmpleadoNombre = new javax.swing.JLabel();
         jDateChooser = new com.toedter.calendar.JDateChooser();
+        txtDescripcionCorta = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(28, 28, 28));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setBackground(new java.awt.Color(193, 166, 120));
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(193, 166, 120));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Registrar Gastos");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(501, 20, 300, -1));
+        jLabelTitulo.setBackground(new java.awt.Color(193, 166, 120));
+        jLabelTitulo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabelTitulo.setForeground(new java.awt.Color(193, 166, 120));
+        jLabelTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelTitulo.setText("Registrar Gastos");
+        jPanel1.add(jLabelTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(501, 20, 300, -1));
 
         btnHome.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnHome.setOpaque(false);
@@ -87,10 +140,10 @@ public class JFrameGasto extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(62, 44, 32));
 
-        labelFecha.setFont(new java.awt.Font("Segoe UI", 3, 25)); // NOI18N
-        labelFecha.setForeground(new java.awt.Color(246, 246, 246));
-        labelFecha.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelFecha.setText("??");
+        labelFechaActual.setFont(new java.awt.Font("Segoe UI", 3, 25)); // NOI18N
+        labelFechaActual.setForeground(new java.awt.Color(246, 246, 246));
+        labelFechaActual.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelFechaActual.setText("??");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -98,14 +151,14 @@ public class JFrameGasto extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelFechaActual, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(16, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(0, 6, Short.MAX_VALUE)
-                .addComponent(labelFecha))
+                .addComponent(labelFechaActual))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 20, 280, 40));
@@ -116,11 +169,16 @@ public class JFrameGasto extends javax.swing.JFrame {
 
         btnRegistrarGasto.setBackground(new java.awt.Color(42, 128, 47));
         btnRegistrarGasto.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRegistrarGasto.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnRegistrarGastoMouseClicked(evt);
+            }
+        });
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(239, 239, 239));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Registrar");
+        jLabelRegistrar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelRegistrar.setForeground(new java.awt.Color(239, 239, 239));
+        jLabelRegistrar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelRegistrar.setText("Registrar");
 
         javax.swing.GroupLayout btnRegistrarGastoLayout = new javax.swing.GroupLayout(btnRegistrarGasto);
         btnRegistrarGasto.setLayout(btnRegistrarGastoLayout);
@@ -128,114 +186,67 @@ public class JFrameGasto extends javax.swing.JFrame {
             btnRegistrarGastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnRegistrarGastoLayout.createSequentialGroup()
                 .addContainerGap(40, Short.MAX_VALUE)
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38))
         );
         btnRegistrarGastoLayout.setVerticalGroup(
             btnRegistrarGastoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnRegistrarGastoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                .addComponent(jLabelRegistrar, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         jPanel1.add(btnRegistrarGasto, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 510, 270, 60));
 
         jPanel3.setBackground(new java.awt.Color(62, 44, 32));
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtGastoMonto.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtGastoMonto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel3.add(txtGastoMonto, new org.netbeans.lib.awtextra.AbsoluteConstraints(876, 64, 180, 40));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(241, 241, 241));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Fecha");
+        jLabelFecha.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelFecha.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelFecha.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFecha.setText("Fecha");
+        jPanel3.add(jLabelFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(845, 116, 240, -1));
 
         jCheckBoxFechaActual.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jCheckBoxFechaActual.setForeground(new java.awt.Color(246, 246, 246));
         jCheckBoxFechaActual.setSelected(true);
         jCheckBoxFechaActual.setText("Fecha actual");
         jCheckBoxFechaActual.addChangeListener(this::jCheckBoxFechaActualStateChanged);
+        jPanel3.add(jCheckBoxFechaActual, new org.netbeans.lib.awtextra.AbsoluteConstraints(904, 154, -1, -1));
 
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(241, 241, 241));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Tipo de gasto");
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(422, 64, 310, 170));
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(241, 241, 241));
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("Gasto");
+        jLabelTipoGasto.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelTipoGasto.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelTipoGasto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelTipoGasto.setText("Tipo de gasto");
+        jPanel3.add(jLabelTipoGasto, new org.netbeans.lib.awtextra.AbsoluteConstraints(32, 17, 240, 50));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(241, 241, 241));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Descripción");
+        jLabelGasto.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelGasto.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelGasto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelGasto.setText("Gasto");
+        jPanel3.add(jLabelGasto, new org.netbeans.lib.awtextra.AbsoluteConstraints(845, 8, 240, 50));
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(113, 113, 113)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(29, 29, 29))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                            .addComponent(jCheckBoxFechaActual)
-                                            .addGap(53, 53, 53))))
-                                .addGap(85, 85, 85))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(115, 115, 115))))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(192, 192, 192)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxFechaActual)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(256, Short.MAX_VALUE))
-        );
+        jLabelDescripcion_EmpleadoNombre.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelDescripcion_EmpleadoNombre.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelDescripcion_EmpleadoNombre.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelDescripcion_EmpleadoNombre.setText("Descripción");
+        jPanel3.add(jLabelDescripcion_EmpleadoNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(464, 8, 240, 50));
+        jPanel3.add(jDateChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 189, 170, 39));
+
+        txtDescripcionCorta.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jPanel3.add(txtDescripcionCorta, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 80, 190, 40));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 140, 1170, 490));
 
@@ -244,13 +255,13 @@ public class JFrameGasto extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1302, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 683, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -271,6 +282,65 @@ public class JFrameGasto extends javax.swing.JFrame {
             jDateChooser.setVisible(true);
         }
     }//GEN-LAST:event_jCheckBoxFechaActualStateChanged
+
+    private void btnRegistrarGastoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrarGastoMouseClicked
+        try {
+            // 1. Validar Monto
+            double monto = Double.parseDouble(txtGastoMonto.getText());
+            if (monto <= 0) {
+                JOptionPane.showMessageDialog(this, "El monto debe ser mayor a 0.");
+                return;
+            }
+
+            // 2. Obtener Descripción (del campo activo)
+            String descripcion = "";
+            if (txtDescripcionCorta.isVisible()) {
+                descripcion = txtDescripcionCorta.getText();
+            } else {
+                descripcion = jTextArea1.getText();
+            }
+            
+            if (descripcion.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes especificar el gasto o empleado.");
+                return;
+            }
+
+            // 3. Obtener Fecha
+            String fechaFinal = "";
+            if (jCheckBoxFechaActual.isSelected()) {
+                // Formato MySQL: YYYY-MM-DD HH:MM:SS
+                fechaFinal = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            } else {
+                if (jDateChooser.getDate() == null) {
+                    JOptionPane.showMessageDialog(this, "Selecciona una fecha.");
+                    return;
+                }
+                // Convertir fecha del chooser
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd 00:00:00");
+                fechaFinal = sdf.format(jDateChooser.getDate());
+            }
+
+            // 4. Crear Objeto
+            modelo.Gasto gasto = new modelo.Gasto();
+            gasto.setTipoGasto((String) jComboBox1.getSelectedItem());
+            gasto.setDescripcion(descripcion);
+            gasto.setMonto(monto);
+            gasto.setFechaGasto(fechaFinal);
+            gasto.setIdUsuario(usuarioActual.getIdUsuario());
+
+            // 5. Guardar
+            dao.GastoDAO dao = new dao.GastoDAO();
+            if (dao.registrarGasto(gasto)) {
+                JOptionPane.showMessageDialog(this, "Gasto registrado correctamente.");
+                limpiarFormulario();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar en base de datos.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El monto debe ser un número válido.");
+        }
+    }//GEN-LAST:event_btnRegistrarGastoMouseClicked
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -305,19 +375,20 @@ public class JFrameGasto extends javax.swing.JFrame {
     private javax.swing.JCheckBox jCheckBoxFechaActual;
     private javax.swing.JComboBox<String> jComboBox1;
     private com.toedter.calendar.JDateChooser jDateChooser;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelDescripcion_EmpleadoNombre;
+    private javax.swing.JLabel jLabelFecha;
+    private javax.swing.JLabel jLabelGasto;
+    private javax.swing.JLabel jLabelRegistrar;
+    private javax.swing.JLabel jLabelTipoGasto;
+    private javax.swing.JLabel jLabelTitulo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JLabel labelFecha;
+    private javax.swing.JLabel labelFechaActual;
+    private javax.swing.JTextField txtDescripcionCorta;
+    private javax.swing.JTextField txtGastoMonto;
     // End of variables declaration//GEN-END:variables
 }

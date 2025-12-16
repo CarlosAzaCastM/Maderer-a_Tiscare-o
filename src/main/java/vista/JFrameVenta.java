@@ -109,6 +109,8 @@ public class JFrameVenta extends javax.swing.JFrame {
             }
         };
         jTableVenta.setModel(modeloTabla);
+        
+        jTableVenta.setRowHeight(30);
     }
 
     // Método para agregar desde el ComboBox y Botón (+)
@@ -120,7 +122,7 @@ public class JFrameVenta extends javax.swing.JFrame {
             if (item.getIdVariante() == v.getId()) {
                 // SI EXISTE: Verificamos si al sumar pasamos el stock
                 int nuevaCantidadTotal = item.getCantidad() + cant;
-                
+
                 if (nuevaCantidadTotal > v.getStockPiezas()) {
                     javax.swing.JOptionPane.showMessageDialog(this, 
                         "No puedes agregar más. Stock máximo: " + v.getStockPiezas() + 
@@ -129,6 +131,7 @@ public class JFrameVenta extends javax.swing.JFrame {
                 }
 
                 // Si hay stock, actualizamos la cantidad del ítem existente
+                // Usamos el setter que recalcula automáticamente
                 item.setCantidad(nuevaCantidadTotal);
                 productoExistente = true;
                 break; // Terminamos el bucle
@@ -137,7 +140,7 @@ public class JFrameVenta extends javax.swing.JFrame {
 
         // 2. SI NO EXISTE: Lo agregamos como nuevo ítem
         if (!productoExistente) {
-            // Verificación inicial de stock (aunque ya lo hiciste en el botón, no está de más)
+            // Verificación inicial de stock
             if (cant > v.getStockPiezas()) {
                  javax.swing.JOptionPane.showMessageDialog(this, "Stock insuficiente.");
                  return;
@@ -262,6 +265,7 @@ public class JFrameVenta extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         backgroundInicio.setBackground(new java.awt.Color(28, 28, 28));
         backgroundInicio.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -323,6 +327,7 @@ public class JFrameVenta extends javax.swing.JFrame {
 
         backgroundInicio.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 10, 280, 40));
 
+        jTableVenta.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTableVenta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -603,19 +608,29 @@ public class JFrameVenta extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+            .addComponent(backgroundInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHomeMouseClicked
+        if (ventaFinalizada != null) {
+            JOptionPane.showMessageDialog(this, 
+                "Venta ya registrada. Imprime el ticket o inicia una nueva venta.");
+            return;
+        }
         Menu menu = new Menu(usuarioActual);
         menu.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnHomeMouseClicked
 
     private void btnEditarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarMouseClicked
+        if (ventaFinalizada != null) {
+            JOptionPane.showMessageDialog(this, 
+                "Venta ya registrada. Imprime el ticket o inicia una nueva venta.");
+            return;
+        }
         int fila = jTableVenta.getSelectedRow();
         if (fila >= 0) {
             DetalleVenta item = carrito.get(fila);
@@ -628,7 +643,7 @@ public class JFrameVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditarMouseClicked
 
     private void btnAgregarProductoVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarProductoVentaMouseClicked
-         if (ventaFinalizada != null) {
+        if (ventaFinalizada != null) {
             JOptionPane.showMessageDialog(this, 
                 "Venta ya registrada. Imprime el ticket o inicia una nueva venta.");
             return;
@@ -676,6 +691,11 @@ public class JFrameVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarProductoVentaMouseClicked
 
     private void btnBorrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBorrarMouseClicked
+        if (ventaFinalizada != null) {
+            JOptionPane.showMessageDialog(this, 
+                "Venta ya registrada. Imprime el ticket o inicia una nueva venta.");
+            return;
+        }
         int fila = jTableVenta.getSelectedRow();
         if (fila >= 0) {
             carrito.remove(fila); // Borrar de la lista lógica

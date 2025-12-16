@@ -1,5 +1,6 @@
 
 package vista;
+import javax.swing.JFrame;
 import modelo.Usuario;
 
 
@@ -12,7 +13,7 @@ public class Menu extends javax.swing.JFrame {
     public Menu(Usuario usuario) {
         initComponents();
         this.usuarioActual = usuario;
-        this.setExtendedState(MAXIMIZED_BOTH);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         aplicarPermisos();
 
@@ -46,10 +47,13 @@ public class Menu extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         btnLogout = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
+        btnCancelarVenta = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(null);
         setMinimumSize(new java.awt.Dimension(1127, 640));
+        setResizable(false);
 
         bgMenu.setBackground(new java.awt.Color(28, 28, 28));
         bgMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -128,10 +132,15 @@ public class Menu extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        bgMenu.add(btnInventario, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 340, -1, 50));
+        bgMenu.add(btnInventario, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 400, -1, 50));
 
         btnGastos.setBackground(new java.awt.Color(62, 44, 32));
         btnGastos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnGastos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnGastosMouseClicked(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(241, 241, 241));
@@ -155,10 +164,15 @@ public class Menu extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        bgMenu.add(btnGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 420, -1, -1));
+        bgMenu.add(btnGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 470, -1, -1));
 
         btnReportes.setBackground(new java.awt.Color(62, 44, 32));
         btnReportes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesMouseClicked(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(241, 241, 241));
@@ -182,7 +196,7 @@ public class Menu extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        bgMenu.add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 500, -1, -1));
+        bgMenu.add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 540, -1, -1));
 
         btnLogout.setBackground(new java.awt.Color(28, 28, 28));
         btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -212,6 +226,38 @@ public class Menu extends javax.swing.JFrame {
         );
 
         bgMenu.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 60, -1));
+
+        btnCancelarVenta.setBackground(new java.awt.Color(62, 44, 32));
+        btnCancelarVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCancelarVenta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCancelarVentaMouseClicked(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(241, 241, 241));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Cancelar Venta");
+
+        javax.swing.GroupLayout btnCancelarVentaLayout = new javax.swing.GroupLayout(btnCancelarVenta);
+        btnCancelarVenta.setLayout(btnCancelarVentaLayout);
+        btnCancelarVentaLayout.setHorizontalGroup(
+            btnCancelarVentaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnCancelarVentaLayout.createSequentialGroup()
+                .addContainerGap(88, Short.MAX_VALUE)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(85, 85, 85))
+        );
+        btnCancelarVentaLayout.setVerticalGroup(
+            btnCancelarVentaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnCancelarVentaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        bgMenu.add(btnCancelarVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 330, -1, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -247,6 +293,24 @@ public class Menu extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnLogoutMouseClicked
 
+    private void btnGastosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGastosMouseClicked
+        JFrameGasto gastoFrame = new JFrameGasto(usuarioActual);
+        gastoFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnGastosMouseClicked
+
+    private void btnCancelarVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarVentaMouseClicked
+        JFrameCancelarVenta cancelarVentaFrame = new JFrameCancelarVenta(usuarioActual);
+        cancelarVentaFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarVentaMouseClicked
+
+    private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
+        JFrameReportes reportesFrame = new JFrameReportes(usuarioActual);
+        reportesFrame.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnReportesMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -279,6 +343,7 @@ public class Menu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bgMenu;
+    private javax.swing.JPanel btnCancelarVenta;
     private javax.swing.JPanel btnGastos;
     private javax.swing.JPanel btnInventario;
     private javax.swing.JPanel btnLogout;
@@ -291,5 +356,6 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     // End of variables declaration//GEN-END:variables
 }
