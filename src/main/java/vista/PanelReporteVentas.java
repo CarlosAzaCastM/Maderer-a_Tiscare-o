@@ -16,10 +16,12 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     private Usuario usuarioActual;
     private DefaultTableModel tableModel;
     private VentaDao ventaDao;
+    private JFrameReportes miFrame;
     
-    public PanelReporteVentas(Usuario usuario) {
+    public PanelReporteVentas(Usuario usuario, JFrameReportes frame) {
         initComponents();
         
+        miFrame = frame;
         usuarioActual = usuario;
         ventaDao = new VentaDao();
         
@@ -54,13 +56,12 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     });
 }
 
-private void abrirDetalleVenta(Venta venta) {
-    // Abrir JFrameDetalleVenta pasando la venta
-    JFrameDetalleVenta detalleVenta = new JFrameDetalleVenta(usuarioActual, venta);
-    detalleVenta.setVisible(true);
-    // Opcional: puedes mantener esta ventana abierta o cerrarla
-    // this.dispose();
-}
+    private void abrirDetalleVenta(Venta venta) {
+        // Abrir JFrameDetalleVenta pasando la venta
+        JFrameDetalleVenta detalleVenta = new JFrameDetalleVenta(usuarioActual, venta);
+        detalleVenta.setVisible(true);
+        miFrame.dispose();
+    }
 
     
     private void configurarTabla() {

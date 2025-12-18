@@ -34,16 +34,21 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         modeloTabla = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Hacer que la tabla no sea editable
+                return false;
             }
         };
         
-        // Definir las columnas según tu BD (sin id_gasto)
-        String[] columnas = {"Tipo Gasto", "Descripción", "Monto", "Fecha Gasto", "ID Usuario"};
+        // AGREGAMOS "ID" AL PRINCIPIO O FINAL (Aquí lo pongo al principio)
+        String[] columnas = {"ID", "Tipo Gasto", "Descripción", "Monto", "Fecha Gasto", "Usuario"};
         modeloTabla.setColumnIdentifiers(columnas);
         jTableGastos.setModel(modeloTabla);
         
         jTableGastos.setRowHeight(40);
+        
+        // Opcional: Ocultar la columna ID visualmente (ancho 0) si no quieres que se vea
+        jTableGastos.getColumnModel().getColumn(0).setMinWidth(0);
+        jTableGastos.getColumnModel().getColumn(0).setMaxWidth(0);
+        jTableGastos.getColumnModel().getColumn(0).setWidth(0);
         
         // Ajustar el ancho de las columnas
         jTableGastos.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -72,17 +77,15 @@ public class PanelReporteGastos extends javax.swing.JPanel {
     }
     
     private void cargarGastosEnTabla(List<Gasto> gastos) {
-        // Limpiar el modelo
         modeloTabla.setRowCount(0);
-        
-        // Agregar cada gasto como una fila en el modelo
         for (Gasto g : gastos) {
             Object[] fila = {
+                g.getIdGasto(), // AQUI AGREGAMOS EL ID
                 g.getTipoGasto(),
                 g.getDescripcion(),
                 g.getMonto(),
                 g.getFechaGasto(),
-                g.getIdUsuario()
+                g.getUsername()
             };
             modeloTabla.addRow(fila);
         }
@@ -145,6 +148,8 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         jDateChooserGastos = new com.toedter.calendar.JDateChooser();
         btnFiltrarGastos = new javax.swing.JPanel();
         jLabelFiltrarGastos = new javax.swing.JLabel();
+        btnEditar = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -214,6 +219,35 @@ public class PanelReporteGastos extends javax.swing.JPanel {
 
         jPanelGastos.add(btnFiltrarGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 30, 140, 40));
 
+        btnEditar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditar.setOpaque(false);
+        btnEditar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEditarMouseClicked(evt);
+            }
+        });
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/vista/imgs/editar.png"))); // NOI18N
+
+        javax.swing.GroupLayout btnEditarLayout = new javax.swing.GroupLayout(btnEditar);
+        btnEditar.setLayout(btnEditarLayout);
+        btnEditarLayout.setHorizontalGroup(
+            btnEditarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnEditarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel10)
+                .addContainerGap(10, Short.MAX_VALUE))
+        );
+        btnEditarLayout.setVerticalGroup(
+            btnEditarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnEditarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel10)
+                .addContainerGap(10, Short.MAX_VALUE))
+        );
+
+        jPanelGastos.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 250, 80, 80));
+
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-11, -13, 1270, 620));
     }// </editor-fold>//GEN-END:initComponents
 
@@ -259,13 +293,50 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnFiltrarGastosMouseClicked
 
+    private void btnEditarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditarMouseClicked
+        // 1. Verificar si hay una fila seleccionada
+        int filaSeleccionada = jTableGastos.getSelectedRow();
+        
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un gasto de la tabla para editar.");
+            return;
+        }
+
+        // 2. Obtener datos de la tabla (Cuidado con los índices de columna si moviste el ID)
+        // Como pusimos ID en columna 0:
+        int idGasto = (int) jTableGastos.getValueAt(filaSeleccionada, 0); 
+        String tipo = (String) jTableGastos.getValueAt(filaSeleccionada, 1);
+        String desc = (String) jTableGastos.getValueAt(filaSeleccionada, 2);
+        double monto = (double) jTableGastos.getValueAt(filaSeleccionada, 3);
+        String fecha = (String) jTableGastos.getValueAt(filaSeleccionada, 4);
+        
+        // 3. Crear objeto auxiliar para pasar al JDialog
+        Gasto gastoAEditar = new Gasto();
+        gastoAEditar.setIdGasto(idGasto);
+        gastoAEditar.setTipoGasto(tipo);
+        gastoAEditar.setDescripcion(desc);
+        gastoAEditar.setMonto(monto);
+        gastoAEditar.setFechaGasto(fecha);
+
+        // 4. Abrir el Dialog (Necesitas referencia al Frame padre, puedes usar null o SwingUtilities)
+        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        JDialogEditarGasto dialog = new JDialogEditarGasto(parentFrame, true, gastoAEditar);
+        dialog.setLocationRelativeTo(this); // Centrar
+        dialog.setVisible(true); // Se detiene aquí hasta que se cierre el dialog (por ser modal)
+
+        // 5. Al cerrar el dialog, refrescar la tabla para ver cambios
+        cargarGastosIniciales();
+    }//GEN-LAST:event_btnEditarMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel btnEditar;
     private javax.swing.JPanel btnFiltrarGastos;
     private javax.swing.JComboBox<String> jComboBoxMesesGastos;
     private javax.swing.JComboBox<String> jComboBoxSemanasGastos;
     private javax.swing.JComboBox<String> jComboBoxTipoGastos;
     private com.toedter.calendar.JDateChooser jDateChooserGastos;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabelFiltrarGastos;
     private javax.swing.JPanel jPanelGastos;
     private javax.swing.JScrollPane jScrollPane1;

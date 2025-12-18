@@ -8,8 +8,17 @@ public class Gasto {
     private double monto;
     private String fechaGasto;
     private int idUsuario;
+    private String username;
 
     public Gasto() {
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getIdGasto() {
@@ -47,7 +56,7 @@ public class Gasto {
     public String getFechaGasto() {
         return fechaGasto;
     }
-
+//
     public void setFechaGasto(String fechaGasto) {
         this.fechaGasto = fechaGasto;
     }

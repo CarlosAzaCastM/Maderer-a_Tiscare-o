@@ -38,16 +38,20 @@ public class GastoDAO {
         }
     }
     
-     public List<Gasto> listarGastosPorUsuario(int idUsuario) {
+    public List<Gasto> listarGastosPorUsuario(int idUsuario) {
         List<Gasto> gastos = new ArrayList<>();
-        String sql = "SELECT * FROM gastos WHERE id_usuario = ? ORDER BY fecha_gasto DESC";
-        
+        // Modificación: Agregamos el JOIN y seleccionamos g.* (todo de gastos) y u.username
+        String sql = "SELECT g.*, u.nombre_completo " +
+                     "FROM gastos g " +
+                     "INNER JOIN usuarios u ON g.id_usuario = u.id_usuario " +
+                     "WHERE g.id_usuario = ? ORDER BY g.fecha_gasto DESC";
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setInt(1, idUsuario);
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 Gasto g = new Gasto();
                 g.setIdGasto(rs.getInt("id_gasto"));
@@ -56,26 +60,35 @@ public class GastoDAO {
                 g.setMonto(rs.getDouble("monto"));
                 g.setFechaGasto(rs.getString("fecha_gasto"));
                 g.setIdUsuario(rs.getInt("id_usuario"));
+
+                // AQUI GUARDAMOS EL USERNAME RECUPERADO DEL JOIN
+                // Asegúrate de tener este método en tu clase Gasto
+                g.setUsername(rs.getString("nombre_completo")); 
+
                 gastos.add(g);
             }
-            
+
         } catch (SQLException e) {
             System.out.println("Error al listar gastos: " + e.getMessage());
         }
         return gastos;
     }
-    
+
     // Método para listar gastos filtrados
     public List<Gasto> listarGastosFiltrados(int idUsuario, String condicion) {
         List<Gasto> gastos = new ArrayList<>();
-        String sql = "SELECT * FROM gastos WHERE id_usuario = ? " + condicion + " ORDER BY fecha_gasto DESC";
-        
+        // Nota: Usamos alias 'g' para referirnos a la tabla gastos en el WHERE
+        String sql = "SELECT g.*, u.nombre_completo " +
+                     "FROM gastos g " +
+                     "INNER JOIN usuarios u ON g.id_usuario = u.id_usuario " +
+                     "WHERE g.id_usuario = ? " + condicion + " ORDER BY g.fecha_gasto DESC";
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setInt(1, idUsuario);
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 Gasto g = new Gasto();
                 g.setIdGasto(rs.getInt("id_gasto"));
@@ -84,9 +97,13 @@ public class GastoDAO {
                 g.setMonto(rs.getDouble("monto"));
                 g.setFechaGasto(rs.getString("fecha_gasto"));
                 g.setIdUsuario(rs.getInt("id_usuario"));
+
+                // AQUI GUARDAMOS EL USERNAME
+                g.setUsername(rs.getString("nombre_completo"));
+
                 gastos.add(g);
             }
-            
+
         } catch (SQLException e) {
             System.out.println("Error al listar gastos filtrados: " + e.getMessage());
         }
@@ -123,5 +140,26 @@ public class GastoDAO {
             e.printStackTrace();
         }
         return total;
+    }
+    
+    public boolean actualizarGasto(Gasto g) {
+        String sql = "UPDATE gastos SET tipo_gasto=?, descripcion=?, monto=?, fecha_gasto=? WHERE id_gasto=?";
+        
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, g.getTipoGasto());
+            ps.setString(2, g.getDescripcion());
+            ps.setDouble(3, g.getMonto());
+            ps.setString(4, g.getFechaGasto()); // Asumiendo que envías el String en formato YYYY-MM-DD HH:MM:SS
+            ps.setInt(5, g.getIdGasto()); // Importante: el ID para el WHERE
+            
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar gasto: " + e.getMessage());
+            return false;
+        }
     }
 }

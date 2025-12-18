@@ -15,7 +15,7 @@ public class JFrameReportes extends javax.swing.JFrame {
     public JFrameReportes(Usuario usuario) {
         initComponents();
         // Crear los paneles
-        panelVentas = new PanelReporteVentas(usuario);
+        panelVentas = new PanelReporteVentas(usuario, this);
         panelInventario = new PanelReporteInventario(usuario);
         panelGastos = new PanelReporteGastos(usuario);
         panelGanancia = new PanelReporteGanancias(usuario);

@@ -212,6 +212,7 @@ public class JFrameGasto extends javax.swing.JFrame {
         jLabelFecha.setText("Fecha");
         jPanel3.add(jLabelFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(845, 116, 240, -1));
 
+        jCheckBoxFechaActual.setBackground(new java.awt.Color(62, 44, 32));
         jCheckBoxFechaActual.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jCheckBoxFechaActual.setForeground(new java.awt.Color(246, 246, 246));
         jCheckBoxFechaActual.setSelected(true);

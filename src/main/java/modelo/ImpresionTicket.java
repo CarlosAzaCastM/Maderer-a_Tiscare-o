@@ -51,10 +51,10 @@ public class ImpresionTicket {
         int fila = 9;
         for (DetalleVenta item : productos) {
             // Formatear la línea completa manualmente
-            String cantidad = String.format("%-5d", item.getCantidad());
+            String cantidad = String.format("%-3d", item.getCantidad());
             String descripcion = item.getNombre() + " " + item.getMedida()+" "+item.getGrosor()+" "+item.getClase();
             if (descripcion.length() > 20) descripcion = descripcion.substring(0, 20);
-            descripcion = String.format("%-15s", descripcion);
+            descripcion = String.format("%-19s", descripcion);
             String precio = String.format("$%.0f", item.getSubtotal());
             
             // Imprimir toda la línea como una sola cadena

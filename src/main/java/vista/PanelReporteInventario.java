@@ -38,18 +38,18 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         
         // Columnas para las entradas de inventario
         String[] columnas = {
-            "Producto", "Clase", "Medida", "Grosor", 
-            "Cantidad", "Nuevo Costo", "Nuevo Precio", "Fecha"
+            "Cantidad", "Producto", "Clase", "Medida", "Grosor", 
+            "Nuevo Costo", "Nuevo Precio", "Fecha"
         };
         tableModelInventario.setColumnIdentifiers(columnas);
         jTableEntradasInventario.setModel(tableModelInventario);
         
         // Ajustar el ancho de las columnas
-        jTableEntradasInventario.getColumnModel().getColumn(0).setPreferredWidth(150); // Producto
-        jTableEntradasInventario.getColumnModel().getColumn(1).setPreferredWidth(100); // Clase
-        jTableEntradasInventario.getColumnModel().getColumn(2).setPreferredWidth(100); // Medida
-        jTableEntradasInventario.getColumnModel().getColumn(3).setPreferredWidth(100); // Grosor
-        jTableEntradasInventario.getColumnModel().getColumn(4).setPreferredWidth(80);  // Cantidad
+        jTableEntradasInventario.getColumnModel().getColumn(0).setPreferredWidth(80);  // Cantidad
+        jTableEntradasInventario.getColumnModel().getColumn(1).setPreferredWidth(150); // Producto
+        jTableEntradasInventario.getColumnModel().getColumn(2).setPreferredWidth(100); // Clase
+        jTableEntradasInventario.getColumnModel().getColumn(3).setPreferredWidth(100); // Medida
+        jTableEntradasInventario.getColumnModel().getColumn(4).setPreferredWidth(100); // Grosor  
         jTableEntradasInventario.getColumnModel().getColumn(5).setPreferredWidth(100); // Nuevo Costo
         jTableEntradasInventario.getColumnModel().getColumn(6).setPreferredWidth(100); // Nuevo Precio
         jTableEntradasInventario.getColumnModel().getColumn(7).setPreferredWidth(150); // Fecha
@@ -64,7 +64,7 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         // Centrar el texto en algunas columnas
         javax.swing.table.DefaultTableCellRenderer centerRenderer = new javax.swing.table.DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jTableEntradasInventario.getColumnModel().getColumn(4).setCellRenderer(centerRenderer); // Cantidad
+        jTableEntradasInventario.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Cantidad
         
         // Alinear a la derecha las columnas numéricas
         javax.swing.table.DefaultTableCellRenderer rightRenderer = new javax.swing.table.DefaultTableCellRenderer();
@@ -168,11 +168,11 @@ public class PanelReporteInventario extends javax.swing.JPanel {
                 String fechaFormateada = sdf.format(fecha);
                 
                 Object[] fila = {
+                    entrada.getCantidadAgregada(),
                     entrada.getNombreProducto() != null ? entrada.getNombreProducto() : "N/A",
                     entrada.getClase() != null ? entrada.getClase() : "N/A",
                     entrada.getMedida() != null ? entrada.getMedida() : "N/A",
                     entrada.getGrosor() != null ? entrada.getGrosor() : "N/A",
-                    entrada.getCantidadAgregada(),
                     df.format(entrada.getNuevoCostoCompra()),
                     df.format(entrada.getNuevoPrecioVenta()),
                     fechaFormateada
@@ -181,11 +181,11 @@ public class PanelReporteInventario extends javax.swing.JPanel {
             } catch (Exception e) {
                 // Si hay error en el formato de fecha, usar el string original
                 Object[] fila = {
+                    entrada.getCantidadAgregada(),
                     entrada.getNombreProducto() != null ? entrada.getNombreProducto() : "N/A",
                     entrada.getClase() != null ? entrada.getClase() : "N/A",
                     entrada.getMedida() != null ? entrada.getMedida() : "N/A",
                     entrada.getGrosor() != null ? entrada.getGrosor() : "N/A",
-                    entrada.getCantidadAgregada(),
                     df.format(entrada.getNuevoCostoCompra()),
                     df.format(entrada.getNuevoPrecioVenta()),
                     entrada.getFechaEntrada()

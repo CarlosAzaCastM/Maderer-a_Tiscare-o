@@ -2,6 +2,7 @@ modelo\Gasto.class
 dao\GananciaDAO.class
 vista\Menu$4.class
 vista\InicioSesion.class
+vista\PanelReporteGastos$3.class
 vista\Menu.class
 vista\FormularioProducto$2.class
 dao\VarianteDAO.class
@@ -19,7 +20,9 @@ vista\ActulizarProducto$2.class
 vista\PanelReporteInventario$2.class
 vista\JDialogEditarVenta$2.class
 vista\PanelReporteVentas$3.class
+vista\JDialogEditarGasto.class
 vista\JFrameVenta$5.class
+vista\JDialogEditarGasto$2.class
 dao\VentaDao.class
 modelo\Usuario.class
 vista\PanelReporteVentas$6.class
@@ -43,6 +46,7 @@ vista\PanelReporteGanancias$1.class
 dao\ProductoDAO.class
 vista\JFrameVenta.class
 dao\GastoDAO.class
+vista\JDialogEditarGasto$1.class
 vista\JFrameVenta$1.class
 vista\PanelReporteVentas$1.class
 config\Conexion.class
@@ -72,8 +76,10 @@ vista\JFrameVenta$6.class
 vista\Menu$2.class
 vista\PanelReporteGanancias.class
 vista\ActulizarProducto$1.class
+vista\JDialogEditarGasto$3.class
 dao\UsuarioDAO.class
 dao\DetalleVentaDAO.class
+vista\JDialogEditarGasto$3$1.class
 modelo\DetalleVentaHistorico.class
 vista\JFrameInventario$3.class
 vista\PanelReporteVentas$2.class

@@ -11,6 +11,8 @@ public class JDialogEditarVenta extends javax.swing.JDialog {
     private DetalleVenta itemActual;
     private JFrameVenta padre;
     
+    
+    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JDialogEditarVenta.class.getName());
 
     public JDialogEditarVenta(java.awt.Frame parent, boolean modal, DetalleVenta item) {

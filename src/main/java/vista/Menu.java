@@ -12,6 +12,7 @@ public class Menu extends javax.swing.JFrame {
 
     public Menu(Usuario usuario) {
         initComponents();
+        getContentPane().setBackground(new java.awt.Color(28, 28, 28));
         this.usuarioActual = usuario;
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -54,6 +55,7 @@ public class Menu extends javax.swing.JFrame {
         setMaximumSize(null);
         setMinimumSize(new java.awt.Dimension(1127, 640));
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         bgMenu.setBackground(new java.awt.Color(28, 28, 28));
         bgMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -62,7 +64,7 @@ public class Menu extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(193, 168, 120));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("LA MEJOR CALIDAD AL MEJOR PRECIO");
-        bgMenu.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 160, 367, 38));
+        bgMenu.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 160, 420, 38));
 
         jLabel2.setFont(new java.awt.Font("Poor Richard", 1, 60)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(26, 87, 29));
@@ -72,6 +74,8 @@ public class Menu extends javax.swing.JFrame {
 
         btnVenta.setBackground(new java.awt.Color(62, 44, 32));
         btnVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVenta.setMaximumSize(new java.awt.Dimension(347, 53));
+        btnVenta.setMinimumSize(new java.awt.Dimension(347, 53));
         btnVenta.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnVentaMouseClicked(evt);
@@ -82,6 +86,9 @@ public class Menu extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(241, 241, 241));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Venta");
+        jLabel4.setMaximumSize(new java.awt.Dimension(167, 32));
+        jLabel4.setMinimumSize(new java.awt.Dimension(167, 32));
+        jLabel4.setPreferredSize(new java.awt.Dimension(167, 32));
 
         javax.swing.GroupLayout btnVentaLayout = new javax.swing.GroupLayout(btnVenta);
         btnVenta.setLayout(btnVentaLayout);
@@ -104,6 +111,8 @@ public class Menu extends javax.swing.JFrame {
 
         btnInventario.setBackground(new java.awt.Color(62, 44, 32));
         btnInventario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnInventario.setMaximumSize(new java.awt.Dimension(347, 53));
+        btnInventario.setMinimumSize(new java.awt.Dimension(347, 53));
         btnInventario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnInventarioMouseClicked(evt);
@@ -114,6 +123,9 @@ public class Menu extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(241, 241, 241));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Inventario");
+        jLabel5.setMaximumSize(new java.awt.Dimension(167, 32));
+        jLabel5.setMinimumSize(new java.awt.Dimension(167, 32));
+        jLabel5.setPreferredSize(new java.awt.Dimension(167, 32));
 
         javax.swing.GroupLayout btnInventarioLayout = new javax.swing.GroupLayout(btnInventario);
         btnInventario.setLayout(btnInventarioLayout);
@@ -136,6 +148,8 @@ public class Menu extends javax.swing.JFrame {
 
         btnGastos.setBackground(new java.awt.Color(62, 44, 32));
         btnGastos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnGastos.setMaximumSize(new java.awt.Dimension(347, 53));
+        btnGastos.setMinimumSize(new java.awt.Dimension(347, 53));
         btnGastos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnGastosMouseClicked(evt);
@@ -146,6 +160,9 @@ public class Menu extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(241, 241, 241));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Gastos");
+        jLabel6.setMaximumSize(new java.awt.Dimension(167, 32));
+        jLabel6.setMinimumSize(new java.awt.Dimension(167, 32));
+        jLabel6.setPreferredSize(new java.awt.Dimension(167, 32));
 
         javax.swing.GroupLayout btnGastosLayout = new javax.swing.GroupLayout(btnGastos);
         btnGastos.setLayout(btnGastosLayout);
@@ -160,14 +177,16 @@ public class Menu extends javax.swing.JFrame {
             btnGastosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnGastosLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
-        bgMenu.add(btnGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 470, -1, -1));
+        bgMenu.add(btnGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 470, -1, 50));
 
         btnReportes.setBackground(new java.awt.Color(62, 44, 32));
         btnReportes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnReportes.setMaximumSize(new java.awt.Dimension(347, 53));
+        btnReportes.setMinimumSize(new java.awt.Dimension(347, 53));
         btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnReportesMouseClicked(evt);
@@ -178,6 +197,9 @@ public class Menu extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(241, 241, 241));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Reportes");
+        jLabel3.setMaximumSize(new java.awt.Dimension(167, 32));
+        jLabel3.setMinimumSize(new java.awt.Dimension(167, 32));
+        jLabel3.setPreferredSize(new java.awt.Dimension(167, 32));
 
         javax.swing.GroupLayout btnReportesLayout = new javax.swing.GroupLayout(btnReportes);
         btnReportes.setLayout(btnReportesLayout);
@@ -186,17 +208,17 @@ public class Menu extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnReportesLayout.createSequentialGroup()
                 .addContainerGap(90, Short.MAX_VALUE)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(83, 83, 83))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         btnReportesLayout.setVerticalGroup(
             btnReportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnReportesLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15))
         );
 
-        bgMenu.add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 540, -1, -1));
+        bgMenu.add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 540, -1, 50));
 
         btnLogout.setBackground(new java.awt.Color(28, 28, 28));
         btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -229,6 +251,8 @@ public class Menu extends javax.swing.JFrame {
 
         btnCancelarVenta.setBackground(new java.awt.Color(62, 44, 32));
         btnCancelarVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCancelarVenta.setMaximumSize(new java.awt.Dimension(347, 53));
+        btnCancelarVenta.setMinimumSize(new java.awt.Dimension(347, 53));
         btnCancelarVenta.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnCancelarVentaMouseClicked(evt);
@@ -259,18 +283,7 @@ public class Menu extends javax.swing.JFrame {
 
         bgMenu.add(btnCancelarVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 330, -1, 50));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(bgMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 1281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bgMenu, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
-        );
+        getContentPane().add(bgMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1281, 650));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
