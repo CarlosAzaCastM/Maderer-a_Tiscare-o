@@ -105,9 +105,19 @@ public class PanelReporteInventario extends javax.swing.JPanel {
     
     private void cargarEntradasUltimosDias(int dias) {
         Calendar calendario = Calendar.getInstance();
+        
+        calendario.set(Calendar.HOUR_OF_DAY, 23);
+        calendario.set(Calendar.MINUTE, 59);
+        calendario.set(Calendar.SECOND, 59);
         Date fechaFin = calendario.getTime();
         
+        // Ahora restamos los días para encontrar el inicio
         calendario.add(Calendar.DAY_OF_YEAR, -dias);
+        
+        // Ajustamos el inicio al primer segundo de ese día
+        calendario.set(Calendar.HOUR_OF_DAY, 0);
+        calendario.set(Calendar.MINUTE, 0);
+        calendario.set(Calendar.SECOND, 0);
         Date fechaInicio = calendario.getTime();
         
         List<EntradaInventario> entradas = entradaInventarioDao.obtenerEntradasPorFecha(fechaInicio, fechaFin);
