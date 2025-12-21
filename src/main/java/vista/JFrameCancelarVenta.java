@@ -151,11 +151,23 @@ public class JFrameCancelarVenta extends javax.swing.JFrame {
     
     private void cargarVentasUltimosDias(int dias) {
         Calendar calendario = Calendar.getInstance();
+        
+        // CORRECCIÓN CLAVE: Ajustar el fin al último segundo de hoy
+        calendario.set(Calendar.HOUR_OF_DAY, 23);
+        calendario.set(Calendar.MINUTE, 59);
+        calendario.set(Calendar.SECOND, 59);
         Date fechaFin = calendario.getTime();
         
+        // Ahora restamos los días para encontrar el inicio
         calendario.add(Calendar.DAY_OF_YEAR, -dias);
+        
+        // Ajustamos el inicio al primer segundo de ese día
+        calendario.set(Calendar.HOUR_OF_DAY, 0);
+        calendario.set(Calendar.MINUTE, 0);
+        calendario.set(Calendar.SECOND, 0);
         Date fechaInicio = calendario.getTime();
         
+        // Ahora sí traerá todo el rango completo
         List<Venta> ventas = ventaDao.obtenerVentasPorFecha(fechaInicio, fechaFin, null);
         actualizarTabla(ventas);
     }
@@ -454,47 +466,48 @@ public class JFrameCancelarVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_btnHomeMouseClicked
 
     private void btnCancelarVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarVentaMouseClicked
-         int filaSeleccionada = jTableVentas.getSelectedRow();
-    
-    if (filaSeleccionada == -1) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una venta de la tabla.");
-        return;
-    }
-    
-    // Obtener el folio de la venta seleccionada
-    int folio = (int) tableModel.getValueAt(filaSeleccionada, 0);
-    String estatusActual = (String) tableModel.getValueAt(filaSeleccionada, 2); // CORREGIDO: columna 2, no 4
-    
-    // Verificar si ya está cancelada
-    if ("cancelada".equals(estatusActual)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Esta venta ya está cancelada.");
-        return;
-    }
-    
-    // Confirmar cancelación
-    int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
-        this, 
-        "¿Está seguro de cancelar la venta con folio " + folio + "?", 
-        "Confirmar Cancelación", 
-        javax.swing.JOptionPane.YES_NO_OPTION
-    );
-    
-    if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
-        // Obtener la venta completa
-        Venta venta = ventaDao.obtenerVentaPorFolio(folio);
-        
-        if (venta != null) {
-            boolean exito = ventaDao.actualizarEstatusVenta(venta.getIdVenta(), "cancelada");
+        int filaSeleccionada = jTableVentas.getSelectedRow();
+     
+        if (filaSeleccionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una venta de la tabla.");
+            return;
+        }
+     
+        // Obtener datos de la tabla visualmente
+        int folio = (int) tableModel.getValueAt(filaSeleccionada, 0);
+        String estatusActual = (String) tableModel.getValueAt(filaSeleccionada, 2); 
+     
+        if ("cancelada".equalsIgnoreCase(estatusActual)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Esta venta ya está cancelada.");
+            return;
+        }
+     
+        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
+            this, 
+            "¿Está seguro de cancelar la venta FOLIO: " + folio + "?\n(El stock será devuelto al inventario)", 
+            "Confirmar Cancelación", 
+            javax.swing.JOptionPane.YES_NO_OPTION
+        );
+     
+        if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+            // Necesitamos el ID interno, no el folio. Buscamos la venta rápido.
+            Venta venta = ventaDao.obtenerVentaPorFolio(folio);
             
-            if (exito) {
-                // Actualizar la tabla - CORREGIDO: columna 2, no 4
-                tableModel.setValueAt("cancelada", filaSeleccionada, 2);
-                javax.swing.JOptionPane.showMessageDialog(this, "Venta cancelada exitosamente.");
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al cancelar la venta.");
+            if (venta != null) {
+                // USAMOS EL NUEVO MÉTODO QUE DEVUELVE STOCK
+                boolean exito = ventaDao.cancelarVenta(venta.getIdVenta());
+                
+                if (exito) {
+                    // Actualizamos visualmente la tabla sin recargar todo
+                    tableModel.setValueAt("cancelada", filaSeleccionada, 2);
+                    // Forzamos repintado para que cambie a rojo
+                    jTableVentas.repaint(); 
+                    javax.swing.JOptionPane.showMessageDialog(this, "Venta cancelada y stock devuelto exitosamente.");
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Error al cancelar la venta.");
+                }
             }
         }
-    }
     }//GEN-LAST:event_btnCancelarVentaMouseClicked
 
     private void btnFiltrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnFiltrarMouseClicked

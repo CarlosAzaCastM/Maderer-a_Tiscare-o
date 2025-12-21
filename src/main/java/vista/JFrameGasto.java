@@ -204,6 +204,11 @@ public class JFrameGasto extends javax.swing.JFrame {
 
         txtGastoMonto.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtGastoMonto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtGastoMonto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtGastoMontoKeyTyped(evt);
+            }
+        });
         jPanel3.add(txtGastoMonto, new org.netbeans.lib.awtextra.AbsoluteConstraints(876, 64, 180, 40));
 
         jLabelFecha.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -342,6 +347,20 @@ public class JFrameGasto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El monto debe ser un número válido.");
         }
     }//GEN-LAST:event_btnRegistrarGastoMouseClicked
+
+    private void txtGastoMontoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtGastoMontoKeyTyped
+        char car = evt.getKeyChar();
+        
+        // Permitir números Y el punto, pero bloquear lo demás
+        if ((car < '0' || car > '9') && car != '.') {
+            evt.consume();
+        }
+        
+        // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+        if (car == '.' && txtGastoMonto.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtGastoMontoKeyTyped
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

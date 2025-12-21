@@ -1,9 +1,12 @@
-
 package vista;
 
 import dao.VarianteDAO;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import modelo.Usuario;
 import modelo.Variante;
@@ -13,62 +16,151 @@ public class JFrameInventario extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JFrameInventario.class.getName());
 
     DefaultTableModel modelo;
-    List<Variante> listaActual;
     private Usuario usuarioActual;
+    
+    // OPTIMIZACIÓN: Esta lista guardará todo el inventario en RAM
+    private List<Variante> inventarioCache;
 
     public JFrameInventario(Usuario usuario) {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         usuarioActual = usuario;
-        configurarTabla(); // 1. Configuramos las columnas
-        cargarTabla("");
+        
+        configurarTabla(); 
+        
+        // 1. Carga inicial: Traemos todo de la BD una sola vez
+        refrescarDatosDesdeBD();
+        
+        // OPCIONAL: Agregar un listener para que busque mientras escribes (tiempo real)
+        // Esto solo es posible gracias a que la búsqueda es local y rápida.
+        txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                filtrarTablaLocalmente(txtBuscar.getText());
+            }
+        });
     }
 
     private void configurarTabla() {
-        String[] titulos = {"Cant", "Producto", "Clase", "Medida", "Grosor", "Ft Total", "Costo C", "Costo V"};
+        String[] titulos = {"Cant", "Producto", "Clase", "Medida", "Grosor", "Ft Total", "Costo C", "Costo V", "min"};
         modelo = new DefaultTableModel(null, titulos) {
-            // Esto hace que el usuario no pueda editar las celdas directamente (solo lectura)
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         jTableInventario.setModel(modelo);
-        
         jTableInventario.setRowHeight(35);
+        jTableInventario.getColumnModel().getColumn(0).setPreferredWidth(50); 
+        jTableInventario.getColumnModel().getColumn(1).setPreferredWidth(150);
         
-        // Opcional: Ajustar ancho de columnas específicas (Ej: Cantidad más pequeña)
-        jTableInventario.getColumnModel().getColumn(0).setPreferredWidth(50); // Cant
-        jTableInventario.getColumnModel().getColumn(1).setPreferredWidth(150); // Producto
+        jTableInventario.getColumnModel().getColumn(8).setMinWidth(0);
+        jTableInventario.getColumnModel().getColumn(8).setMaxWidth(0);
+        jTableInventario.getColumnModel().getColumn(8).setWidth(0);
+        
+        aplicarColoresTabla();
+    }
+    
+    private void aplicarColoresTabla() {
+        DefaultTableCellRenderer renderizador = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, 
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                // 1. Alineación
+                if (column == 0 || column == 1) { 
+                    setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                } else {
+                    setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                }
+
+                // 2. Si está seleccionado, mantener colores de selección
+                if (isSelected) {
+                    return c;
+                }
+
+                // 3. Lógica de color por stock
+                try {
+                    // Obtener valores del modelo (no de la vista)
+                    int modelRow = table.convertRowIndexToModel(row);
+
+                    Object valStockObj = table.getModel().getValueAt(modelRow, 0); // Columna Cantidad
+                    Object valMinObj = table.getModel().getValueAt(modelRow, 8); // Columna stock mínimo (oculta)
+
+                    // Verificar que no sean nulos
+                    if (valStockObj != null && valMinObj != null) {
+                        int stockActual = Integer.parseInt(valStockObj.toString());
+                        int stockMinimo = Integer.parseInt(valMinObj.toString());
+
+                        // DEBUG: Puedes agregar esto temporalmente para verificar
+                        // System.out.println("Fila " + row + ": Stock=" + stockActual + ", Min=" + stockMinimo);
+
+                        if (stockActual < stockMinimo) {
+                            c.setForeground(Color.RED);
+                            c.setBackground(new Color(255, 235, 235));
+                        } else {
+                            c.setForeground(Color.BLACK);
+                            c.setBackground(table.getBackground());
+                        }
+                    }
+                } catch (Exception e) {
+                    // Si hay error, mantener colores por defecto
+                    c.setForeground(table.getForeground());
+                    c.setBackground(table.getBackground());
+                }
+
+                return c;
+            }
+        };
+
+        // Aplicar renderizador a todas las columnas visibles
+        for (int i = 0; i < 8; i++) {
+            jTableInventario.getColumnModel().getColumn(i).setCellRenderer(renderizador);
+        }
     }
 
-    // Método reutilizable para llenar datos
-    public void cargarTabla(String buscar) {
+    // MÉTODO 1: Va a la nube y descarga todo (Lento, usar solo al inicio o al guardar cambios)
+    public void refrescarDatosDesdeBD() {
         VarianteDAO dao = new VarianteDAO();
-        listaActual = dao.listarInventario(buscar);
+        // Usamos el método optimizado que creamos en el paso anterior
+        this.inventarioCache = dao.obtenerTodoElInventario();
+        
+        // Al terminar de descargar, mostramos todo en la tabla
+        filtrarTablaLocalmente("");
+    }
 
-        modelo.setRowCount(0); // Limpiar tabla antes de llenar
+    // MÉTODO 2: Filtra la lista en memoria (Instantáneo, usar en Búsqueda)
+    public void filtrarTablaLocalmente(String textoBusqueda) {
+    if (inventarioCache == null) return;
 
-        for (Variante v : listaActual) {
-            // Cálculo visual de pies totales
+    modelo.setRowCount(0); // Limpiar tabla visual
+    
+    String busquedaMinuscula = textoBusqueda.toLowerCase();
+
+    for (Variante v : inventarioCache) {
+        String nombreCompleto = (v.getNombreProducto() + " " + v.getMedida() + " " + v.getClase()).toLowerCase();
+        
+        if (busquedaMinuscula.isEmpty() || nombreCompleto.contains(busquedaMinuscula)) {
+            
             double piesTotales = v.getStockPiezas() * v.getPiesPorPieza();
 
-            Object[] fila = new Object[8];
+            // CORRECCIÓN: Ahora son 9 elementos (0-8) en lugar de 8
+            Object[] fila = new Object[9]; // Cambiado de 8 a 9
             fila[0] = v.getStockPiezas(); 
             fila[1] = v.getNombreProducto();
             fila[2] = v.getClase();
             fila[3] = v.getMedida();
             fila[4] = v.getGrosor();
-            
-            // FORMATOS DE NÚMEROS
-            fila[5] = String.format("%.2f ft", piesTotales);     // Ej: "23.33 ft"
-            fila[6] = String.format("$ %.2f", v.getCostoCompra()); // Ej: "$ 20.50"
-            fila[7] = String.format("$ %.2f", v.getPrecioVenta()); // Ej: "$ 25.00"
+            fila[5] = String.format("%.2f ft", piesTotales);     
+            fila[6] = String.format("$ %.2f", v.getCostoCompra()); 
+            fila[7] = String.format("$ %.2f", v.getPrecioVenta()); 
+            fila[8] = v.getStockMinimo(); // ¡IMPORTANTE! Agregar el stock mínimo
 
             modelo.addRow(fila);
         }
     }
-    
+}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -277,16 +369,16 @@ public class JFrameInventario extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseClicked
-        cargarTabla(txtBuscar.getText());
+        filtrarTablaLocalmente(txtBuscar.getText());
     }//GEN-LAST:event_btnBuscarMouseClicked
 
     private void btnAgregarProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarProductoMouseClicked
         FormularioProducto modal = new FormularioProducto(this, true);
         modal.setVisible(true);
+        refrescarDatosDesdeBD();
     }//GEN-LAST:event_btnAgregarProductoMouseClicked
 
     private void btnActualizarProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarProductoMouseClicked
-        // 1. Verificar si seleccionó una fila
         int fila = jTableInventario.getSelectedRow();
         
         if (fila == -1) {
@@ -294,14 +386,31 @@ public class JFrameInventario extends javax.swing.JFrame {
             return;
         }
         
-        // 2. Obtener el objeto de la lista en memoria
-        // (Asegúrate que tu listaActual esté declarada globalmente como hicimos antes)
-        if (listaActual != null && fila < listaActual.size()) {
-            Variante vSeleccionada = listaActual.get(fila);
-            
-            // 3. Abrir el modal pasándole el objeto
+        // MEJOR SOLUCIÓN: Vamos a obtener los datos clave de la fila seleccionada y buscar en el cache.
+        String prodSel = (String) modelo.getValueAt(fila, 1);
+        String claseSel = (String) modelo.getValueAt(fila, 2);
+        String medidaSel = (String) modelo.getValueAt(fila, 3);
+        String grosorSel = (String) modelo.getValueAt(fila, 4);
+        
+        Variante vSeleccionada = null;
+        if (inventarioCache != null) {
+            for (Variante v : inventarioCache) {
+                if (v.getNombreProducto().equals(prodSel) && 
+                    v.getClase().equals(claseSel) &&
+                    v.getMedida().equals(medidaSel) &&
+                    v.getGrosor().equals(grosorSel)) {
+                    vSeleccionada = v;
+                    break;
+                }
+            }
+        }
+
+        if (vSeleccionada != null) {
             ActulizarProducto modal = new ActulizarProducto(this, true, vSeleccionada);
             modal.setVisible(true);
+            
+            // IMPORTANTE: Refrescar BD tras editar
+            refrescarDatosDesdeBD();
         }
     }//GEN-LAST:event_btnActualizarProductoMouseClicked
 

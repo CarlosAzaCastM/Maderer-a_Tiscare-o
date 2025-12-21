@@ -169,6 +169,12 @@ public class JDialogEditarGasto extends javax.swing.JDialog {
         );
 
         jPanel1.add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 16, -1, -1));
+
+        txtMonto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtMontoKeyTyped(evt);
+            }
+        });
         jPanel1.add(txtMonto, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 140, 130, 40));
         jPanel1.add(txtDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 140, 130, 40));
         jPanel1.add(jDateChooserFechaGasto, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 140, 160, 40));
@@ -198,6 +204,20 @@ public class JDialogEditarGasto extends javax.swing.JDialog {
     private void btnCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMouseClicked
         this.dispose();
     }//GEN-LAST:event_btnCloseMouseClicked
+
+    private void txtMontoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtMontoKeyTyped
+        char car = evt.getKeyChar();
+        
+        // Permitir números Y el punto, pero bloquear lo demás
+        if ((car < '0' || car > '9') && car != '.') {
+            evt.consume();
+        }
+        
+        // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+        if (car == '.' && txtMonto.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtMontoKeyTyped
 
     /**
      * @param args the command line arguments

@@ -1,6 +1,8 @@
 package vista;
 
 import modelo.Usuario;
+import javax.swing.event.ChangeEvent; // Importante
+import javax.swing.event.ChangeListener;
 
 public class JFrameReportes extends javax.swing.JFrame {
     private PanelReporteVentas panelVentas;
@@ -14,6 +16,7 @@ public class JFrameReportes extends javax.swing.JFrame {
 
     public JFrameReportes(Usuario usuario) {
         initComponents();
+        usuarioActual = usuario;
         // Crear los paneles
         panelVentas = new PanelReporteVentas(usuario, this);
         panelInventario = new PanelReporteInventario(usuario);
@@ -26,9 +29,35 @@ public class JFrameReportes extends javax.swing.JFrame {
         jTabbedPane1.addTab("Gastos", panelGastos);
         jTabbedPane1.addTab("Ganancias", panelGanancia);
         
-        usuarioActual = usuario;
+        jTabbedPane1.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                cargarPestañaActual();
+            }
+        });
         
         this.setExtendedState(MAXIMIZED_BOTH);
+        
+        panelVentas.asegurarCargaDatos();
+    }
+    
+    private void cargarPestañaActual() {
+        int indice = jTabbedPane1.getSelectedIndex();
+        
+        switch (indice) {
+            case 0: // Ventas
+                panelVentas.asegurarCargaDatos();
+                break;
+            case 1: // Inventario
+                panelInventario.asegurarCargaDatos();
+                break;
+            case 2: // Gastos
+                panelGastos.asegurarCargaDatos();
+                break;
+            case 3: // Ganancias
+                panelGanancia.asegurarCargaDatos();
+                break;
+        }
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

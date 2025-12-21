@@ -7,8 +7,41 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class VarianteDAO {
+    
+    public List<Variante> obtenerTodoElInventario() {
+        List<Variante> lista = new ArrayList<>();
+        // Hacemos el JOIN para tener ya el nombre del producto cargado en memoria
+        String sql = "SELECT v.*, p.nombre FROM variantes v " +
+                     "INNER JOIN productos p ON v.id_producto = p.id_producto " +
+                     "ORDER BY p.nombre, v.clase, v.medida, v.grosor";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Variante v = new Variante();
+                v.setId(rs.getInt("id_variante"));
+                v.setNombreProducto(rs.getString("nombre")); // Ya tenemos el nombre aquí
+                v.setClase(rs.getString("clase"));
+                v.setMedida(rs.getString("medida"));
+                v.setGrosor(rs.getString("grosor"));
+                v.setPiesPorPieza(rs.getDouble("pies_por_pieza"));
+                v.setCostoCompra(rs.getDouble("costo_compra"));
+                v.setPrecioVenta(rs.getDouble("precio_venta"));
+                v.setStockPiezas(rs.getInt("stock_piezas"));
+                v.setStockMinimo(rs.getInt("stock_minimo"));
+                lista.add(v);
+            }
+        } catch (Exception e) {
+            System.out.println("Error cargando caché inventario: " + e.getMessage());
+        }
+        return lista;
+    }
 
     public List<Variante> listarInventario(String busqueda) {
         List<Variante> lista = new ArrayList<>();
@@ -240,6 +273,60 @@ public class VarianteDAO {
             }
         } catch (Exception e) { System.out.println("Error buscando variante: " + e.getMessage()); }
         return v;
+    }
+    
+    public boolean registrarEntradaYActualizar(int idVariante, int cantidad, double nuevoCosto, double nuevoPrecio) {
+        Connection con = null;
+        PreparedStatement psEntrada = null;
+        PreparedStatement psUpdate = null;
+        
+        String sqlEntrada = "INSERT INTO entradas_inventario (id_variante, cantidad_agregada, nuevo_costo_compra, nuevo_precio_venta) VALUES (?, ?, ?, ?)";
+        
+        // Sumamos stock y actualizamos precios
+        String sqlUpdate = "UPDATE variantes SET stock_piezas = stock_piezas + ?, costo_compra = ?, precio_venta = ? WHERE id_variante = ?";
+        
+        try {
+            con = Conexion.getConexion();
+            con.setAutoCommit(false); // INICIO DE LA TRANSACCIÓN (Pone pausa al guardado automático)
+
+            // 1. Insertar en Historial
+            psEntrada = con.prepareStatement(sqlEntrada);
+            psEntrada.setInt(1, idVariante);
+            psEntrada.setInt(2, cantidad);
+            psEntrada.setDouble(3, nuevoCosto);
+            psEntrada.setDouble(4, nuevoPrecio);
+            psEntrada.executeUpdate();
+
+            // 2. Actualizar Stock y Precios
+            psUpdate = con.prepareStatement(sqlUpdate);
+            psUpdate.setInt(1, cantidad);
+            psUpdate.setDouble(2, nuevoCosto);
+            psUpdate.setDouble(3, nuevoPrecio);
+            psUpdate.setInt(4, idVariante);
+            int filas = psUpdate.executeUpdate();
+
+            if (filas > 0) {
+                con.commit(); // CONFIRMAR CAMBIOS (Todo salió bien)
+                return true;
+            } else {
+                con.rollback(); // Cancelar si no se actualizó la variante
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error en transacción de entrada: " + e.getMessage());
+            try {
+                if (con != null) con.rollback(); // Cancelar todo si hubo error
+            } catch (Exception ex) { }
+            return false;
+        } finally {
+            // Cerramos recursos manualmente
+            try {
+                if (psEntrada != null) psEntrada.close();
+                if (psUpdate != null) psUpdate.close();
+                if (con != null) con.close();
+            } catch (Exception ex) { }
+        }
     }
     
     

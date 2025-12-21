@@ -13,14 +13,23 @@ import modelo.Usuario;
 public class PanelReporteGastos extends javax.swing.JPanel {
     private Usuario usuario;
     private DefaultTableModel modeloTabla;
+    private boolean datosCargados = false;
     
     public PanelReporteGastos(Usuario usuario) {
         this.usuario = usuario;
         initComponents();
         logicaInicial();
         configurarTabla();
-        cargarGastosIniciales();
+        
         jComboBoxTipoGastos.addActionListener(e -> cambiarVisibilidadFiltros());
+    }
+    
+    public void asegurarCargaDatos() {
+        // Solo va a la BD si nunca ha cargado datos antes
+        if (!datosCargados) {
+            cargarGastosIniciales();
+            datosCargados = true; // Marcamos como cargado
+        }
     }
     
     private void logicaInicial(){

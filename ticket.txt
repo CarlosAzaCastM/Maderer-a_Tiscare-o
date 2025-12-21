@@ -2,16 +2,16 @@
       MADERERIA TISCARENO       
 La mejor calidad al mejor precio
 --------------------------------
-Folio: #30                      
-Fecha: 17/12/2025 21:53         
+Folio: #36                      
+Fecha: 20/12/2025 13:19         
 --------------------------------
 CANT  DESCRIPCION       SUBTOTAL
 --------------------------------
-100 Tabla 10x10 7/8 2YM $24792  
+3   Tabla 12x10 7/8 4   $630    
 --------------------------------
-TOTAL:          $24792.00       
-EFECTIVO:       $24792.00       
-TARJETA:        $0.00           
+TOTAL:          $630.00         
+EFECTIVO:       $300.00         
+TARJETA:        $330.00         
 ================================
     GRACIAS POR SU COMPRA       
                                 

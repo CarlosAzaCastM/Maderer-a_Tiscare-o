@@ -2,7 +2,6 @@
 package vista;
 
 import dao.VentaDao;
-import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,9 +17,11 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     private VentaDao ventaDao;
     private JFrameReportes miFrame;
     
+    // 1. NUEVA VARIABLE DE CONTROL
+    private boolean datosCargados = false; 
+
     public PanelReporteVentas(Usuario usuario, JFrameReportes frame) {
         initComponents();
-        
         miFrame = frame;
         usuarioActual = usuario;
         ventaDao = new VentaDao();
@@ -28,12 +29,18 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         configurarTabla();
         logicaInicial();
         
-        cargarVentasUltimosDias(7);
-        
         jComboBoxTipoFiltroVentas.addActionListener(e -> cambiarVisibilidadFiltros());
-        
-        
         agregarListenerDobleClic();
+        
+    }
+
+    // 3. NUEVO MÉTODO PÚBLICO
+    public void asegurarCargaDatos() {
+        // Solo va a la BD si nunca ha cargado datos antes
+        if (!datosCargados) {
+            cargarVentasUltimosDias(7);
+            datosCargados = true; // Marcamos como cargado
+        }
     }
     
      private void agregarListenerDobleClic() {
@@ -58,9 +65,9 @@ public class PanelReporteVentas extends javax.swing.JPanel {
 
     private void abrirDetalleVenta(Venta venta) {
         // Abrir JFrameDetalleVenta pasando la venta
-        JFrameDetalleVenta detalleVenta = new JFrameDetalleVenta(usuarioActual, venta);
+        JFrameDetalleVenta detalleVenta = new JFrameDetalleVenta(usuarioActual, venta, miFrame);
         detalleVenta.setVisible(true);
-        miFrame.dispose();
+        miFrame.setVisible(false);
     }
 
     
@@ -209,11 +216,23 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     
     private void cargarVentasUltimosDias(int dias) {
         Calendar calendario = Calendar.getInstance();
+        
+        // CORRECCIÓN CLAVE: Ajustar el fin al último segundo de hoy
+        calendario.set(Calendar.HOUR_OF_DAY, 23);
+        calendario.set(Calendar.MINUTE, 59);
+        calendario.set(Calendar.SECOND, 59);
         Date fechaFin = calendario.getTime();
         
+        // Ahora restamos los días para encontrar el inicio
         calendario.add(Calendar.DAY_OF_YEAR, -dias);
+        
+        // Ajustamos el inicio al primer segundo de ese día
+        calendario.set(Calendar.HOUR_OF_DAY, 0);
+        calendario.set(Calendar.MINUTE, 0);
+        calendario.set(Calendar.SECOND, 0);
         Date fechaInicio = calendario.getTime();
         
+        // Ahora sí traerá todo el rango completo
         List<Venta> ventas = ventaDao.obtenerVentasPorFecha(fechaInicio, fechaFin, null);
         actualizarTabla(ventas);
     }
@@ -600,7 +619,7 @@ public class PanelReporteVentas extends javax.swing.JPanel {
             Venta venta = ventaDao.obtenerVentaPorFolio(folio);
 
             if (venta != null) {
-                boolean exito = ventaDao.actualizarEstatusVenta(venta.getIdVenta(), "cancelada");
+                boolean exito = ventaDao.cancelarVenta(venta.getIdVenta());
 
                 if (exito) {
                     // Actualizar la tabla en la columna 8
@@ -617,40 +636,40 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         int filaSeleccionada = jTableVentas.getSelectedRow();
 
         if (filaSeleccionada == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una venta de la tabla.");
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una venta.");
             return;
         }
 
-        // Obtener el folio de la venta seleccionada (columna 0)
         int folio = (int) tableModel.getValueAt(filaSeleccionada, 0);
-        // Obtener el estatus actual (columna 8)
-        String estatusActual = (String) tableModel.getValueAt(filaSeleccionada, 8);
+        String estatusActual = (String) tableModel.getValueAt(filaSeleccionada, 8); // Columna estatus
 
-        // Verificar si ya está completada
-        if ("completada".equals(estatusActual)) {
+        if ("completada".equalsIgnoreCase(estatusActual)) {
             javax.swing.JOptionPane.showMessageDialog(this, "Esta venta ya está completada.");
             return;
         }
 
-        // Confirmar completar
-        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            "¿Está seguro de marcar como completada la venta con folio " + folio + "?",
-            "Confirmar Completar",
-            javax.swing.JOptionPane.YES_NO_OPTION
-        );
+        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(this, 
+            "¿Marcar venta " + folio + " como COMPLETADA?", "Confirmar", javax.swing.JOptionPane.YES_NO_OPTION);
 
         if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
-            // Obtener la venta completa
             Venta venta = ventaDao.obtenerVentaPorFolio(folio);
-
+            
             if (venta != null) {
-                boolean exito = ventaDao.actualizarEstatusVenta(venta.getIdVenta(), "completada");
+                boolean exito = false;
+
+                // CASO 1: Era cancelada -> Hay que restar stock de nuevo
+                if ("cancelada".equalsIgnoreCase(estatusActual)) {
+                    exito = ventaDao.reactivarVenta(venta.getIdVenta());
+                } 
+                // CASO 2: Era pendiente -> Solo cambiar estatus (el stock ya estaba restado)
+                else {
+                    exito = ventaDao.actualizarEstatusVenta(venta.getIdVenta(), "completada");
+                }
 
                 if (exito) {
-                    // Actualizar la tabla en la columna 8
                     tableModel.setValueAt("completada", filaSeleccionada, 8);
-                    javax.swing.JOptionPane.showMessageDialog(this, "Venta completada exitosamente.");
+                    jTableVentas.repaint(); // Refrescar color verde
+                    javax.swing.JOptionPane.showMessageDialog(this, "Venta completada correctamente.");
                 } else {
                     javax.swing.JOptionPane.showMessageDialog(this, "Error al completar la venta.");
                 }

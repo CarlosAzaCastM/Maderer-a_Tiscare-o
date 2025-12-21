@@ -11,8 +11,9 @@ import javax.swing.table.DefaultTableModel;
 import modelo.DetalleVenta;
 import modelo.Usuario;
 import modelo.Variante;
-
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JFrameVenta extends javax.swing.JFrame {
     
@@ -27,49 +28,110 @@ public class JFrameVenta extends javax.swing.JFrame {
     String fechaFormateada = LocalDate.now().format(formato);
     
     private modelo.Venta ventaFinalizada = null;
+    
+    private List<Variante> inventarioCache;
 
     public JFrameVenta(Usuario usuario) {
         initComponents();
         this.modeloTabla = (DefaultTableModel) jTableVenta.getModel();
         configurarTabla();
         usuarioActual = usuario;
+        cargarInventarioEnMemoria(); 
+        
         labelFecha.setText(fechaFormateada);
-        iniciarLogicaCombos();
+        iniciarLogicaCombos(); // Configura los listeners
+        cargarComboProductos(); // Llena el primero desde memoria
         this.setExtendedState(MAXIMIZED_BOTH);
+        
+        txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char car = evt.getKeyChar();
+
+                // Si el caracter NO es un dígito, lo consumimos
+                if (!Character.isDigit(car)) {
+                    evt.consume();
+                }
+            }
+        });
+        
+        txtEfectivo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char car = evt.getKeyChar();
+
+                // Si el caracter NO es un dígito, lo consumimos
+                if (!Character.isDigit(car)) {
+                    evt.consume();
+                }
+            }
+        });
+        
+        txtTarjeta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char car = evt.getKeyChar();
+
+                // Si el caracter NO es un dígito, lo consumimos
+                if (!Character.isDigit(car)) {
+                    evt.consume();
+                }
+            }
+        });
+        
+        txtDescuento.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char car = evt.getKeyChar();
+
+                // Si el caracter NO es un dígito, lo consumimos
+                if (!Character.isDigit(car)) {
+                    evt.consume();
+                }
+            }
+        });
     }
     
-    private void iniciarLogicaCombos() {
-        // Cargar el primer combo (Productos)
-        cargarComboProductos();
+    
+    
+    private void cargarInventarioEnMemoria() {
+        VarianteDAO dao = new VarianteDAO();
+        // Esto hace 1 sola consulta a la BD
+        this.inventarioCache = dao.obtenerTodoElInventario(); 
+    }
 
-        // Agregar "Escuchadores" (Listeners) para la cascada
-        // Cuando cambia Producto -> Carga Clases
+    private void iniciarLogicaCombos() {
+        // Los listeners ahora solo llaman a métodos locales, no a la BD
         jComboBoxProducto.addActionListener(e -> cargarComboClases());
-        
-        // Cuando cambia Clase -> Carga Medidas
         jComboBoxClase.addActionListener(e -> cargarComboMedidas());
-        
-        // Cuando cambia Medida -> Carga Grosores
         jComboBoxMedida.addActionListener(e -> cargarComboGrosores());
     }
     
     private void cargarComboProductos() {
         jComboBoxProducto.removeAllItems();
-        VarianteDAO dao = new VarianteDAO();
-        List<String> lista = dao.obtenerNombresProductos();
-        for (String s : lista) jComboBoxProducto.addItem(s);
-        // Al cargar productos, reseteamos los siguientes
-        jComboBoxProducto.setSelectedIndex(-1); // Ninguno seleccionado al inicio
+        // Usamos un Set para evitar repetidos automáticamente
+        Set<String> productosUnicos = new HashSet<>();
+        
+        for (Variante v : inventarioCache) {
+            productosUnicos.add(v.getNombreProducto());
+        }
+        
+        // Ordenamos y agregamos (opcional ordenar)
+        productosUnicos.stream().sorted().forEach(jComboBoxProducto::addItem);
+        
+        jComboBoxProducto.setSelectedIndex(-1);
     }
 
     private void cargarComboClases() {
         jComboBoxClase.removeAllItems();
         if (jComboBoxProducto.getSelectedIndex() == -1) return;
         
-        String producto = (String) jComboBoxProducto.getSelectedItem();
-        VarianteDAO dao = new VarianteDAO();
-        List<String> lista = dao.obtenerClasesPorProducto(producto);
-        for (String s : lista) jComboBoxClase.addItem(s);
+        String prodSeleccionado = (String) jComboBoxProducto.getSelectedItem();
+        Set<String> clasesUnicas = new HashSet<>();
+
+        // Recorremos la lista en memoria (tarda microsegundos)
+        for (Variante v : inventarioCache) {
+            if (v.getNombreProducto().equals(prodSeleccionado)) {
+                clasesUnicas.add(v.getClase());
+            }
+        }
+        clasesUnicas.stream().sorted().forEach(jComboBoxClase::addItem);
         jComboBoxClase.setSelectedIndex(-1);
     }
 
@@ -77,12 +139,16 @@ public class JFrameVenta extends javax.swing.JFrame {
         jComboBoxMedida.removeAllItems();
         if (jComboBoxClase.getSelectedIndex() == -1) return;
 
-        String producto = (String) jComboBoxProducto.getSelectedItem();
-        String clase = (String) jComboBoxClase.getSelectedItem();
-        
-        VarianteDAO dao = new VarianteDAO();
-        List<String> lista = dao.obtenerMedidas(producto, clase);
-        for (String s : lista) jComboBoxMedida.addItem(s);
+        String prodSel = (String) jComboBoxProducto.getSelectedItem();
+        String claseSel = (String) jComboBoxClase.getSelectedItem();
+        Set<String> medidasUnicas = new HashSet<>();
+
+        for (Variante v : inventarioCache) {
+            if (v.getNombreProducto().equals(prodSel) && v.getClase().equals(claseSel)) {
+                medidasUnicas.add(v.getMedida());
+            }
+        }
+        medidasUnicas.stream().sorted().forEach(jComboBoxMedida::addItem);
         jComboBoxMedida.setSelectedIndex(-1);
     }
 
@@ -90,14 +156,20 @@ public class JFrameVenta extends javax.swing.JFrame {
         jComboBoxGrosor.removeAllItems();
         if (jComboBoxMedida.getSelectedIndex() == -1) return;
 
-        String producto = (String) jComboBoxProducto.getSelectedItem();
-        String clase = (String) jComboBoxClase.getSelectedItem();
-        String medida = (String) jComboBoxMedida.getSelectedItem();
+        String prodSel = (String) jComboBoxProducto.getSelectedItem();
+        String claseSel = (String) jComboBoxClase.getSelectedItem();
+        String medidaSel = (String) jComboBoxMedida.getSelectedItem();
+        Set<String> grosoresUnicos = new HashSet<>();
 
-        VarianteDAO dao = new VarianteDAO();
-        List<String> lista = dao.obtenerGrosores(producto, clase, medida);
-        for (String s : lista) jComboBoxGrosor.addItem(s);
-        if(lista.size() > 0) jComboBoxGrosor.setSelectedIndex(0); // Autoseleccionar el primero si hay
+        for (Variante v : inventarioCache) {
+            if (v.getNombreProducto().equals(prodSel) && 
+                v.getClase().equals(claseSel) && 
+                v.getMedida().equals(medidaSel)) {
+                grosoresUnicos.add(v.getGrosor());
+            }
+        }
+        grosoresUnicos.stream().sorted().forEach(jComboBoxGrosor::addItem);
+        if (jComboBoxGrosor.getItemCount() > 0) jComboBoxGrosor.setSelectedIndex(0);
     }
 
     private void configurarTabla() {
@@ -142,7 +214,7 @@ public class JFrameVenta extends javax.swing.JFrame {
         if (!productoExistente) {
             // Verificación inicial de stock
             if (cant > v.getStockPiezas()) {
-                 javax.swing.JOptionPane.showMessageDialog(this, "Stock insuficiente.");
+                 javax.swing.JOptionPane.showMessageDialog(this, "Stock insuficiente, tienes: "+v.getStockPiezas());
                  return;
             }
             DetalleVenta nuevoItem = new DetalleVenta(v, cant);
@@ -672,21 +744,31 @@ public class JFrameVenta extends javax.swing.JFrame {
         String clase = (String) jComboBoxClase.getSelectedItem();
         String medida = (String) jComboBoxMedida.getSelectedItem();
         String grosor = (String) jComboBoxGrosor.getSelectedItem();
+        
+        cantidad = Integer.parseInt(txtCantidad.getText()); // (Con tu try-catch original)
 
-        VarianteDAO dao = new VarianteDAO();
-        Variante v = dao.buscarVarianteEspecifica(prod, clase, medida, grosor);
-
-        if (v != null) {
-            // 4. Verificar stock suficiente (Opcional pero recomendado)
-            if (v.getStockPiezas() < cantidad) {
-                JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponibles: " + v.getStockPiezas());
-                return;
+        // Buscamos en la lista de memoria
+        Variante varianteEncontrada = null;
+        for (Variante v : inventarioCache) {
+            if (v.getNombreProducto().equals(prod) && 
+                v.getClase().equals(clase) && 
+                v.getMedida().equals(medida) && 
+                v.getGrosor().equals(grosor)) {
+                varianteEncontrada = v;
+                break;
             }
-            // 5. Agregar al carrito
-            agregarAlCarrito(v, cantidad);
-            txtCantidad.setText(""); // Limpiar cantidad
+        }
+
+        if (varianteEncontrada != null) {
+            // Validar Stock
+            if (varianteEncontrada.getStockPiezas() < cantidad) {
+                 JOptionPane.showMessageDialog(this, "Stock insuficiente, tienes: "+varianteEncontrada.getStockPiezas());
+                 return;
+            }
+            agregarAlCarrito(varianteEncontrada, cantidad);
+            txtCantidad.setText("");
         } else {
-            JOptionPane.showMessageDialog(this, "Error: No se encontró el producto específico en la BD.");
+             JOptionPane.showMessageDialog(this, "Error extraño: Producto no encontrado en memoria.");
         }
     }//GEN-LAST:event_btnAgregarProductoVentaMouseClicked
 

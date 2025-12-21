@@ -102,7 +102,7 @@ public class FormularioProducto extends javax.swing.JDialog {
                 }
                 
                 JOptionPane.showMessageDialog(this, "Producto y Variante creados exitosamente (ID Padre: " + idPadre + ").");
-                padre.cargarTabla("");
+                padre.refrescarDatosDesdeBD();
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Error al guardar la variante en base de datos.");
@@ -186,6 +186,11 @@ public class FormularioProducto extends javax.swing.JDialog {
         jLabel2.setText("Cant");
 
         txtCant.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtCant.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCantKeyTyped(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(243, 243, 243));
@@ -214,8 +219,18 @@ public class FormularioProducto extends javax.swing.JDialog {
         jLabel6.setText("Grosor");
 
         txtGrosor.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtGrosor.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtGrosorKeyTyped(evt);
+            }
+        });
 
         txtCostoC.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtCostoC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCostoCKeyTyped(evt);
+            }
+        });
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(243, 243, 243));
@@ -228,6 +243,11 @@ public class FormularioProducto extends javax.swing.JDialog {
         jLabel8.setText("Precio V");
 
         txtCostoV.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtCostoV.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCostoVKeyTyped(evt);
+            }
+        });
 
         btnCrear.setBackground(new java.awt.Color(53, 146, 53));
         btnCrear.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -286,15 +306,10 @@ public class FormularioProducto extends javax.swing.JDialog {
                 .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(179, 179, 179)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(201, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnCrear, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jCheckBoxNuevoProducto, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addGap(256, 256, 256))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -303,9 +318,9 @@ public class FormularioProducto extends javax.swing.JDialog {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtProducto, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -318,7 +333,7 @@ public class FormularioProducto extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtGrosor, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtCostoC, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -326,7 +341,12 @@ public class FormularioProducto extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtCostoV)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25))))
+                        .addGap(25, 25, 25))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCrear, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jCheckBoxNuevoProducto, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(256, 256, 256))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -400,6 +420,55 @@ public class FormularioProducto extends javax.swing.JDialog {
     private void btnCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMouseClicked
         this.dispose();
     }//GEN-LAST:event_btnCloseMouseClicked
+
+    private void txtCantKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCantKeyTyped
+        char car = evt.getKeyChar();
+        if (!Character.isDigit(car)) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCantKeyTyped
+
+    private void txtCostoCKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCostoCKeyTyped
+        char car = evt.getKeyChar();
+        
+        // Permitir números Y el punto, pero bloquear lo demás
+        if ((car < '0' || car > '9') && car != '.') {
+            evt.consume();
+        }
+        
+        // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+        if (car == '.' && txtCostoC.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCostoCKeyTyped
+
+    private void txtCostoVKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCostoVKeyTyped
+        char car = evt.getKeyChar();
+        
+        // Permitir números Y el punto, pero bloquear lo demás
+        if ((car < '0' || car > '9') && car != '.') {
+            evt.consume();
+        }
+        
+        // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+        if (car == '.' && txtCostoV.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCostoVKeyTyped
+
+    private void txtGrosorKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtGrosorKeyTyped
+        char car = evt.getKeyChar();
+        
+        // Permitir números Y el punto, pero bloquear lo demás
+        if ((car < '0' || car > '9') && car != '.') {
+            evt.consume();
+        }
+        
+        // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+        if (car == '.' && txtGrosor.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtGrosorKeyTyped
 
     /**
      * @param args the command line arguments

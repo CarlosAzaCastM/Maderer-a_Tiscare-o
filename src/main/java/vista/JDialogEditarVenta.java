@@ -229,7 +229,19 @@ public class JDialogEditarVenta extends javax.swing.JDialog {
         txtFtTotal.setForeground(new java.awt.Color(243, 243, 243));
         txtFtTotal.setText("??");
         jPanel1.add(txtFtTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 140, 90, -1));
+
+        txtPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtPrecioKeyTyped(evt);
+            }
+        });
         jPanel1.add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 140, 80, 40));
+
+        txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCantidadKeyTyped(evt);
+            }
+        });
         jPanel1.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 50, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -253,6 +265,27 @@ public class JDialogEditarVenta extends javax.swing.JDialog {
     private void btnCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMouseClicked
         this.dispose();
     }//GEN-LAST:event_btnCloseMouseClicked
+
+    private void txtCantidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCantidadKeyTyped
+        char car = evt.getKeyChar();
+        if (!Character.isDigit(car)) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCantidadKeyTyped
+
+    private void txtPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPrecioKeyTyped
+        char car = evt.getKeyChar();
+        
+        // Permitir números Y el punto, pero bloquear lo demás
+        if ((car < '0' || car > '9') && car != '.') {
+            evt.consume();
+        }
+        
+        // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+        if (car == '.' && txtPrecio.getText().contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtPrecioKeyTyped
 
 
     public static void main(String args[]) {

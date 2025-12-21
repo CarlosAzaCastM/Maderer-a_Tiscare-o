@@ -11,12 +11,21 @@ import modelo.Usuario;
 
 public class PanelReporteGanancias extends javax.swing.JPanel {
     private Usuario usuario;
+    private boolean datosCargados = false;
     
     public PanelReporteGanancias(Usuario usuario) {
         this.usuario = usuario;
         initComponents();
         logicaInicial();
         jComboBoxTipoFiltro.addActionListener(e -> cambiarVisibilidadFiltros());
+    }
+    
+    public void asegurarCargaDatos() {
+        // Solo va a la BD si nunca ha cargado datos antes
+        if (!datosCargados) {
+            System.out.println("Cargando datos de Ganancia por primera vez...");
+            datosCargados = true; // Marcamos como cargado
+        }
     }
     
     private void logicaInicial() {

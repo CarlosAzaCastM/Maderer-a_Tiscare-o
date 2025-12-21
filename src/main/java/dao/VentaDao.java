@@ -254,5 +254,128 @@ public class VentaDao {
     }
 
     return null;
-}
+    }
+    
+    public boolean cancelarVenta(int idVenta) {
+        Connection con = null;
+        PreparedStatement psEstatus = null;
+        PreparedStatement psSelectDetalles = null;
+        PreparedStatement psDevolverStock = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            con.setAutoCommit(false); // INICIO TRANSACCIÓN
+
+            // 1. Cambiar estatus
+            String sqlEstatus = "UPDATE ventas SET estatus = 'cancelada' WHERE id_venta = ?";
+            psEstatus = con.prepareStatement(sqlEstatus);
+            psEstatus.setInt(1, idVenta);
+            int cambios = psEstatus.executeUpdate();
+
+            if (cambios > 0) {
+                // 2. Obtener los productos de esa venta para saber qué devolver
+                String sqlDetalles = "SELECT id_variante, cantidad FROM detalle_venta WHERE id_venta = ?";
+                psSelectDetalles = con.prepareStatement(sqlDetalles);
+                psSelectDetalles.setInt(1, idVenta);
+                rs = psSelectDetalles.executeQuery();
+
+                // 3. Devolver stock (Preparamos la consulta)
+                String sqlUpdateStock = "UPDATE variantes SET stock_piezas = stock_piezas + ? WHERE id_variante = ?";
+                psDevolverStock = con.prepareStatement(sqlUpdateStock);
+
+                while (rs.next()) {
+                    int idVariante = rs.getInt("id_variante");
+                    int cantidad = rs.getInt("cantidad");
+
+                    psDevolverStock.setInt(1, cantidad); // Sumamos al stock
+                    psDevolverStock.setInt(2, idVariante);
+                    psDevolverStock.addBatch(); // Agregamos al lote
+                }
+
+                psDevolverStock.executeBatch(); // Ejecutamos todas las devoluciones juntas
+                
+                con.commit(); // CONFIRMAR TODO
+                return true;
+            } else {
+                con.rollback();
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error cancelando venta: " + e.getMessage());
+            try { if (con != null) con.rollback(); } catch (SQLException ex) { }
+            return false;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (psEstatus != null) psEstatus.close();
+                if (psSelectDetalles != null) psSelectDetalles.close();
+                if (psDevolverStock != null) psDevolverStock.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) { }
+        }
+    }
+    
+    public boolean reactivarVenta(int idVenta) {
+        Connection con = null;
+        PreparedStatement psEstatus = null;
+        PreparedStatement psSelectDetalles = null;
+        PreparedStatement psRestarStock = null;
+        ResultSet rs = null;
+
+        try {
+            con = Conexion.getConexion();
+            con.setAutoCommit(false); // INICIO TRANSACCIÓN
+
+            // 1. Cambiar estatus a completada
+            String sqlEstatus = "UPDATE ventas SET estatus = 'completada' WHERE id_venta = ?";
+            psEstatus = con.prepareStatement(sqlEstatus);
+            psEstatus.setInt(1, idVenta);
+            int cambios = psEstatus.executeUpdate();
+
+            if (cambios > 0) {
+                // 2. Obtener productos para saber qué restar
+                String sqlDetalles = "SELECT id_variante, cantidad FROM detalle_venta WHERE id_venta = ?";
+                psSelectDetalles = con.prepareStatement(sqlDetalles);
+                psSelectDetalles.setInt(1, idVenta);
+                rs = psSelectDetalles.executeQuery();
+
+                // 3. RESTAR STOCK (Stock = Stock - Cantidad)
+                String sqlUpdateStock = "UPDATE variantes SET stock_piezas = stock_piezas - ? WHERE id_variante = ?";
+                psRestarStock = con.prepareStatement(sqlUpdateStock);
+
+                while (rs.next()) {
+                    int idVariante = rs.getInt("id_variante");
+                    int cantidad = rs.getInt("cantidad");
+
+                    psRestarStock.setInt(1, cantidad); 
+                    psRestarStock.setInt(2, idVariante);
+                    psRestarStock.addBatch();
+                }
+
+                psRestarStock.executeBatch();
+                
+                con.commit(); // CONFIRMAR
+                return true;
+            } else {
+                con.rollback();
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error reactivando venta: " + e.getMessage());
+            try { if (con != null) con.rollback(); } catch (SQLException ex) { }
+            return false;
+        } finally {
+            // Cerrar recursos...
+            try {
+                if (rs != null) rs.close();
+                if (psEstatus != null) psEstatus.close();
+                if (psSelectDetalles != null) psSelectDetalles.close();
+                if (psRestarStock != null) psRestarStock.close();
+                if (con != null) con.close();
+            } catch (SQLException ex) { }
+        }
+    }
 }

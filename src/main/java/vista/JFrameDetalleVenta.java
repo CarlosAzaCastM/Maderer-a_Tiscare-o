@@ -15,17 +15,37 @@ public class JFrameDetalleVenta extends javax.swing.JFrame {
     private Venta ventaSeleccionada;
     private DefaultTableModel tableModel;
     private DetalleVentaDAO detalleVentaDao;
+    private JFrameReportes framePadre;
     
-    public JFrameDetalleVenta(Usuario usuario, Venta venta) {
+    public JFrameDetalleVenta(Usuario usuario, Venta venta, JFrameReportes padre) {
         initComponents();
         usuarioActual = usuario;
         ventaSeleccionada = venta;
+        this.framePadre = padre;
         detalleVentaDao = new DetalleVentaDAO();
         
         configurarTabla();
         cargarDetallesVenta();
         
         this.setExtendedState(MAXIMIZED_BOTH);
+        
+        this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                regresarAlPadre();
+            }
+        });
+    }
+    
+    private void regresarAlPadre() {
+        if (framePadre != null) {
+            framePadre.setVisible(true); // ¡Solo la mostramos! No recargamos nada.
+        } else {
+            // Fallback por si entramos directo (pruebas)
+            new JFrameReportes(usuarioActual).setVisible(true);
+        }
+        this.dispose(); // Destruimos solo el detalle
     }
     
     private void configurarTabla() {
@@ -193,9 +213,7 @@ public class JFrameDetalleVenta extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHomeMouseClicked
-        JFrameReportes reporte = new JFrameReportes(usuarioActual);
-        reporte.setVisible(true);
-        this.dispose();
+        regresarAlPadre();
     }//GEN-LAST:event_btnHomeMouseClicked
 
     /**
@@ -225,7 +243,7 @@ public class JFrameDetalleVenta extends javax.swing.JFrame {
             userPrueba.setNombreCompletoUsuario("Modo Prueba");
             userPrueba.setRolUsuario("admin"); 
             // Para prueba, puedes pasar null como venta
-            new JFrameDetalleVenta(userPrueba, null).setVisible(true);
+            new JFrameDetalleVenta(userPrueba, null, null).setVisible(true);
         });
     }
 

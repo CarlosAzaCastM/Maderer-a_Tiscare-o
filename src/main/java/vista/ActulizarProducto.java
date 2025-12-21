@@ -24,6 +24,47 @@ public class ActulizarProducto extends javax.swing.JDialog {
         this.setLocationRelativeTo(null); // Centrar ventana
         
         cargarDatosActuales();
+        
+        txtCantidadAgregada.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char car = evt.getKeyChar();
+                if (!Character.isDigit(car)) {
+                    evt.consume();
+                }
+            }
+        });
+        
+        txtCostoCNuevo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+               char car = evt.getKeyChar();
+        
+            // Permitir números Y el punto, pero bloquear lo demás
+            if ((car < '0' || car > '9') && car != '.') {
+                evt.consume();
+            }
+
+            // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+            if (car == '.' && txtCostoCNuevo.getText().contains(".")) {
+                evt.consume();
+            }
+            }
+        });
+        
+        txtPrecioVNuevo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char car = evt.getKeyChar();
+        
+                // Permitir números Y el punto, pero bloquear lo demás
+                if ((car < '0' || car > '9') && car != '.') {
+                    evt.consume();
+                }
+
+                // Opcional: Evitar que escriban dos puntos (ej: 10..50)
+                if (car == '.' && txtPrecioVNuevo.getText().contains(".")) {
+                    evt.consume();
+                }
+            }
+        });
     }
 
     private void cargarDatosActuales() {
@@ -64,40 +105,39 @@ public class ActulizarProducto extends javax.swing.JDialog {
                 return;
             }
 
-            // 2. Guardar en el Historial (Entradas Inventario)
-            // Usamos EntradaDAO para registrar quién entró, cuánto y a qué costo
-            EntradaDAO entradaDAO = new EntradaDAO();
-            boolean registroHistorial = entradaDAO.registrarEntrada(
+            // 2. LLAMADA OPTIMIZADA (Una sola conexión para todo)
+            VarianteDAO dao = new VarianteDAO();
+            boolean exito = dao.registrarEntradaYActualizar(
                     varianteSeleccionada.getId(), 
                     cantidadAgregar, 
                     nuevoCosto, 
                     nuevoPrecio
             );
             
-            if (registroHistorial) {
-                // 3. Actualizar el Maestro de Productos (Variantes)
-                // Aquí sumamos al stock y actualizamos los precios oficiales
-                VarianteDAO varianteDAO = new VarianteDAO();
-                boolean actualizacionMaestro = varianteDAO.actualizarStockYPrecios(
-                        varianteSeleccionada.getId(), 
-                        cantidadAgregar, 
-                        nuevoCosto, 
-                        nuevoPrecio
-                );
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
                 
-                if (actualizacionMaestro) {
-                    JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
-                    padre.cargarTabla(""); // Refrescar la tabla de atrás
-                    this.dispose(); // Cerrar ventana
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar la tabla de productos.");
-                }
+                // --- TRUCO DE VELOCIDAD (Actualización Local) ---
+                // En lugar de descargar toda la BD de nuevo, actualizamos el objeto en memoria RAM
+                // Como 'varianteSeleccionada' es el mismo objeto que está en la lista del Padre,
+                // solo actualizamos sus valores aquí:
+                
+                int stockAnterior = varianteSeleccionada.getStockPiezas();
+                varianteSeleccionada.setStockPiezas(stockAnterior + cantidadAgregar);
+                varianteSeleccionada.setCostoCompra(nuevoCosto);
+                varianteSeleccionada.setPrecioVenta(nuevoPrecio);
+                
+                // Le decimos al padre que solo repinte la tabla (Instantáneo)
+                // OJO: Asegúrate que 'filtrarTablaLocalmente' sea público en JFrameInventario
+                padre.filtrarTablaLocalmente(""); 
+                
+                this.dispose(); // Cerrar ventana
             } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar en el historial de entradas.");
+                JOptionPane.showMessageDialog(this, "Error al actualizar en la base de datos.");
             }
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor revisa que los números sean válidos (sin letras).");
+            JOptionPane.showMessageDialog(this, "Por favor revisa que los números sean válidos.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
@@ -118,7 +158,7 @@ public class ActulizarProducto extends javax.swing.JDialog {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         btnActualizar = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
         btnClose = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         txtPrecioV = new javax.swing.JLabel();
@@ -188,6 +228,7 @@ public class ActulizarProducto extends javax.swing.JDialog {
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 100, 94, -1));
 
         btnActualizar.setBackground(new java.awt.Color(121, 140, 215));
+        btnActualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnActualizarMouseClicked(evt);
@@ -195,12 +236,11 @@ public class ActulizarProducto extends javax.swing.JDialog {
         });
         btnActualizar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(238, 238, 238));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("Actualizar");
-        jLabel9.setToolTipText("");
-        btnActualizar.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(76, 10, 100, -1));
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(241, 241, 241));
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("Actualizar");
+        btnActualizar.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 140, 30));
 
         jPanel1.add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 270, 241, 45));
 
@@ -353,6 +393,7 @@ public class ActulizarProducto extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -360,7 +401,6 @@ public class ActulizarProducto extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel txtCantidad;
     private javax.swing.JTextField txtCantidadAgregada;

@@ -10,6 +10,7 @@ public class Variante {
     private double costoCompra;
     private double precioVenta;
     private int stockPiezas;
+    private int stockMinimo;
 
     // Constructor Vacío
     public Variante() {
@@ -31,6 +32,16 @@ public class Variante {
         this.nombreProducto = nombreProducto;
     }
 
+    public int getStockMinimo() {
+        return stockMinimo;
+    }
+
+    public void setStockMinimo(int stockMinimo) {
+        this.stockMinimo = stockMinimo;
+    }
+
+    
+    
     public String getClase() {
         return clase;
     }

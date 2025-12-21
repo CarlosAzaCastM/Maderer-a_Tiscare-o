@@ -14,6 +14,7 @@ public class PanelReporteInventario extends javax.swing.JPanel {
     private Usuario usuarioActual;
     private DefaultTableModel tableModelInventario;
     private EntradaInventarioDAO entradaInventarioDao;
+    private boolean datosCargados = false;
     
     public PanelReporteInventario(Usuario usuario) {
         initComponents();
@@ -23,9 +24,15 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         configurarTabla();
         logicaInicial();
         
-        cargarEntradasUltimosDias(7);
-        
         jComboBoxTipoFiltroInventario.addActionListener(e -> cambiarVisibilidadFiltros());
+    }
+    
+    public void asegurarCargaDatos() {
+        // Solo va a la BD si nunca ha cargado datos antes
+        if (!datosCargados) {
+            cargarEntradasUltimosDias(7);
+            datosCargados = true; // Marcamos como cargado
+        }
     }
     
     private void configurarTabla() {
