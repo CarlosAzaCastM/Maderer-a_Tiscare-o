@@ -93,11 +93,12 @@ public class ImpresionTicket {
         printer.printTextWrap(fila, 1, 0, anchoTicket, "    GRACIAS POR SU COMPRA");
 
         // --- MANDAR A IMPRIMIR ---
-        printer.toFile("ticket.txt");
+        String rutaTicket = System.getProperty("java.io.tmpdir") + "ticket.txt";
+        printer.toFile(rutaTicket);
 
         FileInputStream inputStream = null;
         try {
-            inputStream = new FileInputStream("ticket.txt");
+            inputStream = new FileInputStream(rutaTicket);
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al generar archivo de impresión");
