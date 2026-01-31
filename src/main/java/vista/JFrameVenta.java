@@ -195,13 +195,6 @@ public class JFrameVenta extends javax.swing.JFrame {
                 // SI EXISTE: Verificamos si al sumar pasamos el stock
                 int nuevaCantidadTotal = item.getCantidad() + cant;
 
-                if (nuevaCantidadTotal > v.getStockPiezas()) {
-                    javax.swing.JOptionPane.showMessageDialog(this, 
-                        "No puedes agregar más. Stock máximo: " + v.getStockPiezas() + 
-                        "\nYa tienes " + item.getCantidad() + " en el carrito.");
-                    return; // Detenemos aquí, no agregamos nada
-                }
-
                 // Si hay stock, actualizamos la cantidad del ítem existente
                 // Usamos el setter que recalcula automáticamente
                 item.setCantidad(nuevaCantidadTotal);
@@ -212,11 +205,6 @@ public class JFrameVenta extends javax.swing.JFrame {
 
         // 2. SI NO EXISTE: Lo agregamos como nuevo ítem
         if (!productoExistente) {
-            // Verificación inicial de stock
-            if (cant > v.getStockPiezas()) {
-                 javax.swing.JOptionPane.showMessageDialog(this, "Stock insuficiente, tienes: "+v.getStockPiezas());
-                 return;
-            }
             DetalleVenta nuevoItem = new DetalleVenta(v, cant);
             carrito.add(nuevoItem);
         }
@@ -760,11 +748,6 @@ public class JFrameVenta extends javax.swing.JFrame {
         }
 
         if (varianteEncontrada != null) {
-            // Validar Stock
-            if (varianteEncontrada.getStockPiezas() < cantidad) {
-                 JOptionPane.showMessageDialog(this, "Stock insuficiente, tienes: "+varianteEncontrada.getStockPiezas());
-                 return;
-            }
             agregarAlCarrito(varianteEncontrada, cantidad);
             txtCantidad.setText("");
         } else {

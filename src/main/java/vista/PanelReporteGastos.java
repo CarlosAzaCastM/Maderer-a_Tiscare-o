@@ -36,6 +36,9 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         jComboBoxMesesGastos.setVisible(false);
         jComboBoxSemanasGastos.setVisible(false);
         jDateChooserGastos.setVisible(false);
+        jDateChooserFin.setVisible(false);
+        jLabel1.setVisible(false);
+        jLabel2.setVisible(false);
         
     }
     
@@ -111,10 +114,13 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         cargarGastos(condicion);
     }
 
-    private void cargarEntradasPorFechaExacta(Date fecha) {
-        // Convertir fecha a formato MySQL
-        java.sql.Date sqlDate = new java.sql.Date(fecha.getTime());
-        String condicion = "AND DATE(fecha_gasto) = '" + sqlDate + "'";
+    private void cargarEntradasPorRangoFechas(Date fechaInicio, Date fechaFin) {
+        // Convertir fechas a formato MySQL (YYYY-MM-DD)
+        java.sql.Date sqlInicio = new java.sql.Date(fechaInicio.getTime());
+        java.sql.Date sqlFin = new java.sql.Date(fechaFin.getTime());
+        
+        // Usamos BETWEEN para el rango. DATE() asegura que comparemos solo la parte de fecha y no hora
+        String condicion = "AND DATE(fecha_gasto) BETWEEN '" + sqlInicio + "' AND '" + sqlFin + "'";
         cargarGastos(condicion);
     }
 
@@ -130,6 +136,9 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         jComboBoxMesesGastos.setVisible(false);
         jComboBoxSemanasGastos.setVisible(false);
         jDateChooserGastos.setVisible(false);
+        jDateChooserFin.setVisible(false);
+        jLabel1.setVisible(false);
+        jLabel2.setVisible(false);
         
         switch (filtroSeleccionado) {
             case "Mes":
@@ -140,6 +149,9 @@ public class PanelReporteGastos extends javax.swing.JPanel {
                 break;
             case "Fecha":
                 jDateChooserGastos.setVisible(true);
+                jDateChooserFin.setVisible(true);
+                jLabel1.setVisible(true);
+                jLabel2.setVisible(true);
                 break;
         }
     }
@@ -149,21 +161,25 @@ public class PanelReporteGastos extends javax.swing.JPanel {
     private void initComponents() {
 
         jPanelGastos = new javax.swing.JPanel();
+        jDateChooserGastos = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableGastos = new javax.swing.JTable();
         jComboBoxTipoGastos = new javax.swing.JComboBox<>();
         jComboBoxMesesGastos = new javax.swing.JComboBox<>();
         jComboBoxSemanasGastos = new javax.swing.JComboBox<>();
-        jDateChooserGastos = new com.toedter.calendar.JDateChooser();
         btnFiltrarGastos = new javax.swing.JPanel();
         jLabelFiltrarGastos = new javax.swing.JLabel();
         btnEditar = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
+        jDateChooserFin = new com.toedter.calendar.JDateChooser();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanelGastos.setBackground(new java.awt.Color(62, 44, 32));
         jPanelGastos.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanelGastos.add(jDateChooserGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, 180, 40));
 
         jScrollPane1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
@@ -194,7 +210,6 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         jComboBoxSemanasGastos.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jComboBoxSemanasGastos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Últimos 7 dias", "Últimos 14 dias" }));
         jPanelGastos.add(jComboBoxSemanasGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 40, 160, 30));
-        jPanelGastos.add(jDateChooserGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 40, 180, 30));
 
         btnFiltrarGastos.setBackground(new java.awt.Color(124, 146, 221));
         btnFiltrarGastos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -207,7 +222,7 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         jLabelFiltrarGastos.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabelFiltrarGastos.setForeground(new java.awt.Color(239, 239, 239));
         jLabelFiltrarGastos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabelFiltrarGastos.setText("Filtrar");
+        jLabelFiltrarGastos.setText("Filtraro");
 
         javax.swing.GroupLayout btnFiltrarGastosLayout = new javax.swing.GroupLayout(btnFiltrarGastos);
         btnFiltrarGastos.setLayout(btnFiltrarGastosLayout);
@@ -256,6 +271,17 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         );
 
         jPanelGastos.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 250, 80, 80));
+        jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 40, 180, 40));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(242, 242, 242));
+        jLabel1.setText("Inicio");
+        jPanelGastos.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, -1, -1));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(241, 241, 241));
+        jLabel2.setText("Fin:");
+        jPanelGastos.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 40, 150, -1));
 
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-11, -13, 1270, 620));
     }// </editor-fold>//GEN-END:initComponents
@@ -292,11 +318,17 @@ public class PanelReporteGastos extends javax.swing.JPanel {
                 break;
 
             case "Fecha":
-                Date fechaSeleccionada = jDateChooserGastos.getDate();
-                if (fechaSeleccionada != null) {
-                    cargarEntradasPorFechaExacta(fechaSeleccionada);
+                Date fechaInicio = jDateChooserGastos.getDate();
+                Date fechaFin = jDateChooserFin.getDate();
+                if (fechaInicio != null && fechaFin != null) {
+                    // Validar que inicio no sea mayor que fin
+                    if (fechaInicio.after(fechaFin)) {
+                        JOptionPane.showMessageDialog(this, "La fecha de inicio no puede ser posterior a la final.");
+                    } else {
+                        cargarEntradasPorRangoFechas(fechaInicio, fechaFin);
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha.");
+                    JOptionPane.showMessageDialog(this, "Por favor, seleccione fecha de inicio y fin.");
                 }
                 break;
         }
@@ -344,8 +376,11 @@ public class PanelReporteGastos extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> jComboBoxMesesGastos;
     private javax.swing.JComboBox<String> jComboBoxSemanasGastos;
     private javax.swing.JComboBox<String> jComboBoxTipoGastos;
+    private com.toedter.calendar.JDateChooser jDateChooserFin;
     private com.toedter.calendar.JDateChooser jDateChooserGastos;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelFiltrarGastos;
     private javax.swing.JPanel jPanelGastos;
     private javax.swing.JScrollPane jScrollPane1;

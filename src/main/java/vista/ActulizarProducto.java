@@ -28,6 +28,14 @@ public class ActulizarProducto extends javax.swing.JDialog {
         txtCantidadAgregada.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 char car = evt.getKeyChar();
+                if (car == '-') {
+                    if (txtCantidadAgregada.getText().contains("-") || !txtCantidadAgregada.getText().isEmpty()) {
+                        evt.consume(); // Ya existe un menos o no está al inicio
+                    }
+                    return; // Aceptamos el menos
+                }
+
+                // Bloquear si no es dígito
                 if (!Character.isDigit(car)) {
                     evt.consume();
                 }
@@ -99,11 +107,6 @@ public class ActulizarProducto extends javax.swing.JDialog {
             int cantidadAgregar = Integer.parseInt(txtCantidadAgregada.getText());
             double nuevoCosto = Double.parseDouble(txtCostoCNuevo.getText());
             double nuevoPrecio = Double.parseDouble(txtPrecioVNuevo.getText());
-            
-            if (cantidadAgregar < 0) {
-                JOptionPane.showMessageDialog(this, "No puedes agregar cantidades negativas.");
-                return;
-            }
 
             // 2. LLAMADA OPTIMIZADA (Una sola conexión para todo)
             VarianteDAO dao = new VarianteDAO();
@@ -174,6 +177,7 @@ public class ActulizarProducto extends javax.swing.JDialog {
         jLabel11 = new javax.swing.JLabel();
         txtCostoC1 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -323,9 +327,14 @@ public class ActulizarProducto extends javax.swing.JDialog {
         jPanel1.add(txtCostoC1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 140, 80, -1));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(76, 199, 124));
-        jLabel12.setText("+");
-        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 20, 20));
+        jLabel12.setForeground(new java.awt.Color(255, 102, 102));
+        jLabel12.setText("-");
+        jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 200, 20, 20));
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(76, 199, 124));
+        jLabel14.setText("+");
+        jPanel1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 200, 20, 20));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -394,6 +403,7 @@ public class ActulizarProducto extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

@@ -32,6 +32,9 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jComboBoxMesesGanancia.setVisible(false);
         jComboBoxSemanasGastos.setVisible(false);
         jDateChooserGanancia.setVisible(false);
+        jDateChooserFin.setVisible(false);
+        jLabelInicio.setVisible(false);
+        jLabelFin.setVisible(false);
         
         // Inicializar etiquetas
         jLabelGananciaBruta.setText("$0.00");
@@ -45,6 +48,9 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jComboBoxMesesGanancia.setVisible(false);
         jComboBoxSemanasGastos.setVisible(false);
         jDateChooserGanancia.setVisible(false);
+        jDateChooserFin.setVisible(false);
+        jLabelInicio.setVisible(false);
+        jLabelFin.setVisible(false);
         
         switch (filtroSeleccionado) {
             case "Mes":
@@ -55,6 +61,9 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
                 break;
             case "Fecha":
                 jDateChooserGanancia.setVisible(true);
+                jDateChooserFin.setVisible(true);
+                jLabelInicio.setVisible(true);
+                jLabelFin.setVisible(true);
                 break;
         }
     }
@@ -202,6 +211,9 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         jLabelGananciaBruta = new javax.swing.JLabel();
         jLabelGastos = new javax.swing.JLabel();
+        jLabelInicio = new javax.swing.JLabel();
+        jLabelFin = new javax.swing.JLabel();
+        jDateChooserFin = new com.toedter.calendar.JDateChooser();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -219,7 +231,7 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jComboBoxSemanasGastos.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jComboBoxSemanasGastos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Últimos 7 dias", "Últimos 14 dias" }));
         jPanelGastos.add(jComboBoxSemanasGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 40, 160, 30));
-        jPanelGastos.add(jDateChooserGanancia, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 40, 180, 30));
+        jPanelGastos.add(jDateChooserGanancia, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, 180, 30));
 
         btnFiltrarGanancia.setBackground(new java.awt.Color(124, 146, 221));
         btnFiltrarGanancia.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -295,6 +307,17 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabelGastos.setText("$");
         jPanelGastos.add(jLabelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 280, 380, 70));
 
+        jLabelInicio.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelInicio.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelInicio.setText("Inicio:");
+        jPanelGastos.add(jLabelInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 40, 90, -1));
+
+        jLabelFin.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelFin.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelFin.setText("Fin:");
+        jPanelGastos.add(jLabelFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 40, 50, -1));
+        jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 40, 180, 30));
+
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-21, -3, 1280, 610));
     }// </editor-fold>//GEN-END:initComponents
 
@@ -317,15 +340,18 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> jComboBoxMesesGanancia;
     private javax.swing.JComboBox<String> jComboBoxSemanasGastos;
     private javax.swing.JComboBox<String> jComboBoxTipoFiltro;
+    private com.toedter.calendar.JDateChooser jDateChooserFin;
     private com.toedter.calendar.JDateChooser jDateChooserGanancia;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelFiltrarGastos;
+    private javax.swing.JLabel jLabelFin;
     private javax.swing.JLabel jLabelGananciaBruta;
     private javax.swing.JLabel jLabelGananciaNeta;
     private javax.swing.JLabel jLabelGastos;
+    private javax.swing.JLabel jLabelInicio;
     private javax.swing.JPanel jPanelGastos;
     // End of variables declaration//GEN-END:variables
 }
