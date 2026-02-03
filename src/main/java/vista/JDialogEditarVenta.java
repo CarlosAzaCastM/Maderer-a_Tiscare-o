@@ -51,20 +51,6 @@ public class JDialogEditarVenta extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Datos inválidos.");
                 return;
             }
-            
-            String prod = itemActual.getNombre();
-            String clase = itemActual.getClase();
-            String medida = itemActual.getMedida();
-            String grosor = itemActual.getGrosor();
-
-            VarianteDAO dao = new VarianteDAO();
-            Variante v = dao.buscarVarianteEspecifica(prod, clase, medida, grosor);
-            
-            if (v.getStockPiezas() < nuevaCant) {
-                JOptionPane.showMessageDialog(this, 
-                    "Stock insuficiente. Disponibles: " + v.getStockPiezas());
-                return;
-            }
 
             // Actualizamos el objeto en memoria (el carrito)
             // Usamos los setters que ahora recalcularán automáticamente el ftTotal y subtotal

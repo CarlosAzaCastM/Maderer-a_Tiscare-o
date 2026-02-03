@@ -70,7 +70,7 @@ public class Menu extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(26, 87, 29));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Maderería Tiscareño");
-        bgMenu.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 513, 105));
+        bgMenu.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 50, 730, 105));
 
         btnVenta.setBackground(new java.awt.Color(62, 44, 32));
         btnVenta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

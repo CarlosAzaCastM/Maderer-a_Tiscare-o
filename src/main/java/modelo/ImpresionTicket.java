@@ -26,7 +26,7 @@ public class ImpresionTicket {
         int alturaBase = 11;
         int alturaProductos = productos.size();
         int alturaTotales = venta.getDescuentoDinero() > 0 ? 6 : 5;
-        int alturaPie = 3;
+        int alturaPie = 4;
         int alturaTicket = alturaBase + alturaProductos + alturaTotales + alturaPie;
         int anchoTicket = 32;
 
@@ -91,6 +91,7 @@ public class ImpresionTicket {
         printer.printTextWrap(fila, 1, 0, anchoTicket, "================================");
         fila++;
         printer.printTextWrap(fila, 1, 0, anchoTicket, "    GRACIAS POR SU COMPRA");
+        printer.printTextWrap(fila, 1, 0, anchoTicket, "     TEL: 449-102-44-33");
 
         // --- MANDAR A IMPRIMIR ---
         String rutaTicket = System.getProperty("java.io.tmpdir") + "ticket.txt";

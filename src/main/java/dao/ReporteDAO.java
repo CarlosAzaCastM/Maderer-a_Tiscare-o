@@ -17,13 +17,13 @@ public class ReporteDAO {
         // 1. Suma de totales de ventas completadas en el período
         // 2. Suma de costos de compra de los productos vendidos
         String sql = "SELECT " +
-                     "    COALESCE(SUM(v.total), 0) as total_ventas, " +
-                     "    COALESCE(SUM(dv.cantidad * dv.costo_compra_historico), 0) as total_costo " +
-                     "FROM ventas v " +
-                     "INNER JOIN detalle_venta dv ON v.id_venta = dv.id_venta " +
-                     "WHERE v.fecha_venta BETWEEN ? AND ? " +
-                     "AND v.estatus = 'completada' " +
-                     "AND v.id_usuario = ?";
+             "    COALESCE(SUM(dv.cantidad * dv.precio_venta_historico), 0) as total_ventas, " + 
+             "    COALESCE(SUM(dv.cantidad * dv.costo_compra_historico), 0) as total_costo " +
+             "FROM ventas v " +
+             "INNER JOIN detalle_venta dv ON v.id_venta = dv.id_venta " +
+             "WHERE v.fecha_venta BETWEEN ? AND ? " +
+             "AND v.estatus = 'completada' " +
+             "AND v.id_usuario = ?";
         
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
