@@ -153,7 +153,8 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
                 
             case "Fecha":
                 Date fechaSeleccionada = jDateChooserGanancia.getDate();
-                if (fechaSeleccionada != null) {
+                Date fechaFinalSeleccionada = jDateChooserFin.getDate();
+                if (fechaSeleccionada != null && fechaFinalSeleccionada != null) {
                     // Establecer fecha de inicio al inicio del día
                     calendar.setTime(fechaSeleccionada);
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -162,7 +163,7 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
                     calendar.set(Calendar.MILLISECOND, 0);
                     fechaInicio = calendar.getTime();
                     
-                    // Establecer fecha de fin al final del día
+                    calendar.setTime(fechaFinalSeleccionada);
                     calendar.set(Calendar.HOUR_OF_DAY, 23);
                     calendar.set(Calendar.MINUTE, 59);
                     calendar.set(Calendar.SECOND, 59);
@@ -231,7 +232,7 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jComboBoxSemanasGastos.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jComboBoxSemanasGastos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Últimos 7 dias", "Últimos 14 dias" }));
         jPanelGastos.add(jComboBoxSemanasGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 40, 160, 30));
-        jPanelGastos.add(jDateChooserGanancia, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, 180, 30));
+        jPanelGastos.add(jDateChooserGanancia, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 40, 180, 30));
 
         btnFiltrarGanancia.setBackground(new java.awt.Color(124, 146, 221));
         btnFiltrarGanancia.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -316,7 +317,7 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabelFin.setForeground(new java.awt.Color(241, 241, 241));
         jLabelFin.setText("Fin:");
         jPanelGastos.add(jLabelFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 40, 50, -1));
-        jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 40, 180, 30));
+        jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, 180, 30));
 
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-21, -3, 1280, 610));
     }// </editor-fold>//GEN-END:initComponents

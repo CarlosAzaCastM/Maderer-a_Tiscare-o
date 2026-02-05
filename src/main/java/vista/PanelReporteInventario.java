@@ -88,7 +88,10 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         
         jComboBoxMesesInventario.setVisible(false);
         jComboBoxSemanasInventario.setVisible(false);
-        jDateChooserInventario.setVisible(false);
+        jDateChooserInicio.setVisible(false);
+        jDateChooserFin.setVisible(false);
+        jLabel2.setVisible(false);
+        jLabel3.setVisible(false);
         
         switch (filtroSeleccionado) {
             case "Mes":
@@ -98,7 +101,8 @@ public class PanelReporteInventario extends javax.swing.JPanel {
                 jComboBoxSemanasInventario.setVisible(true);
                 break;
             case "Fecha":
-                jDateChooserInventario.setVisible(true);
+                jDateChooserInicio.setVisible(true);
+                jDateChooserFin.setVisible(true);
                 break;
         }
     }
@@ -124,17 +128,17 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         actualizarTablaInventario(entradas);
     }
     
-    private void cargarEntradasPorFechaExacta(Date fecha) {
+    private void cargarEntradasPorFechaExacta(Date fechaI, Date fechaF) {
         Calendar calendario = Calendar.getInstance();
-        calendario.setTime(fecha);
         
-        // Establecer inicio del día
+        calendario.setTime(fechaI);
         calendario.set(Calendar.HOUR_OF_DAY, 0);
         calendario.set(Calendar.MINUTE, 0);
         calendario.set(Calendar.SECOND, 0);
         Date fechaInicio = calendario.getTime();
         
         // Establecer fin del día
+        calendario.setTime(fechaF);
         calendario.set(Calendar.HOUR_OF_DAY, 23);
         calendario.set(Calendar.MINUTE, 59);
         calendario.set(Calendar.SECOND, 59);
@@ -216,7 +220,10 @@ public class PanelReporteInventario extends javax.swing.JPanel {
     private void logicaInicial() {
         jComboBoxMesesInventario.setVisible(false);
         jComboBoxSemanasInventario.setVisible(false);
-        jDateChooserInventario.setVisible(false);
+        jDateChooserInicio.setVisible(false);
+        jDateChooserFin.setVisible(false);
+        jLabel2.setVisible(false);
+        jLabel3.setVisible(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -226,12 +233,15 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         jPanelInventario = new javax.swing.JPanel();
         jComboBoxSemanasInventario = new javax.swing.JComboBox<>();
         jComboBoxTipoFiltroInventario = new javax.swing.JComboBox<>();
-        jDateChooserInventario = new com.toedter.calendar.JDateChooser();
+        jDateChooserInicio = new com.toedter.calendar.JDateChooser();
         btnFiltrarInventario = new javax.swing.JPanel();
         jLabelCancelar2 = new javax.swing.JLabel();
         jComboBoxMesesInventario = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableEntradasInventario = new javax.swing.JTable();
+        jDateChooserFin = new com.toedter.calendar.JDateChooser();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -245,7 +255,7 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         jComboBoxTipoFiltroInventario.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jComboBoxTipoFiltroInventario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mes", "Semana", "Fecha" }));
         jPanelInventario.add(jComboBoxTipoFiltroInventario, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, 150, 30));
-        jPanelInventario.add(jDateChooserInventario, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 40, 180, 30));
+        jPanelInventario.add(jDateChooserInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 40, 180, 30));
 
         btnFiltrarInventario.setBackground(new java.awt.Color(124, 146, 221));
         btnFiltrarInventario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -297,6 +307,17 @@ public class PanelReporteInventario extends javax.swing.JPanel {
         jScrollPane2.setViewportView(jTableEntradasInventario);
 
         jPanelInventario.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(91, 85, 1030, 450));
+        jPanelInventario.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 40, 180, 30));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(241, 241, 241));
+        jLabel2.setText("Inicio");
+        jPanelInventario.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 40, 90, 30));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(241, 241, 241));
+        jLabel3.setText("Fin:");
+        jPanelInventario.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 40, 90, 30));
 
         add(jPanelInventario, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 580));
     }// </editor-fold>//GEN-END:initComponents
@@ -333,9 +354,14 @@ public class PanelReporteInventario extends javax.swing.JPanel {
                 break;
 
             case "Fecha":
-                Date fechaSeleccionada = jDateChooserInventario.getDate();
-                if (fechaSeleccionada != null) {
-                    cargarEntradasPorFechaExacta(fechaSeleccionada);
+                Date fechaSeleccionada = jDateChooserInicio.getDate();
+                Date fechaSeleccionadaFin = jDateChooserFin.getDate();
+                if (fechaSeleccionada != null && fechaSeleccionadaFin != null) {
+                    if (fechaSeleccionada.after(fechaSeleccionadaFin)) {
+                        JOptionPane.showMessageDialog(this, "La fecha de inicio no puede ser posterior a la final.");
+                    } else {
+                        cargarEntradasPorFechaExacta(fechaSeleccionada, fechaSeleccionadaFin);
+                    }     
                 } else {
                     JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha.");
                 }
@@ -349,7 +375,10 @@ public class PanelReporteInventario extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> jComboBoxMesesInventario;
     private javax.swing.JComboBox<String> jComboBoxSemanasInventario;
     private javax.swing.JComboBox<String> jComboBoxTipoFiltroInventario;
-    private com.toedter.calendar.JDateChooser jDateChooserInventario;
+    private com.toedter.calendar.JDateChooser jDateChooserFin;
+    private com.toedter.calendar.JDateChooser jDateChooserInicio;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabelCancelar2;
     private javax.swing.JPanel jPanelInventario;
     private javax.swing.JScrollPane jScrollPane2;

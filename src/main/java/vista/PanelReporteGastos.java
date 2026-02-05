@@ -179,7 +179,7 @@ public class PanelReporteGastos extends javax.swing.JPanel {
 
         jPanelGastos.setBackground(new java.awt.Color(62, 44, 32));
         jPanelGastos.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanelGastos.add(jDateChooserGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, 180, 40));
+        jPanelGastos.add(jDateChooserGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, 160, 30));
 
         jScrollPane1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
@@ -271,17 +271,17 @@ public class PanelReporteGastos extends javax.swing.JPanel {
         );
 
         jPanelGastos.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 250, 80, 80));
-        jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 40, 180, 40));
+        jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 40, 160, 30));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(242, 242, 242));
         jLabel1.setText("Inicio");
-        jPanelGastos.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, -1, -1));
+        jPanelGastos.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 40, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(241, 241, 241));
         jLabel2.setText("Fin:");
-        jPanelGastos.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 40, 150, -1));
+        jPanelGastos.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 40, 60, -1));
 
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-11, -13, 1270, 620));
     }// </editor-fold>//GEN-END:initComponents

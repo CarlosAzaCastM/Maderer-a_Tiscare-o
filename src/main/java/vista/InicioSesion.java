@@ -42,7 +42,7 @@ public class InicioSesion extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(26, 87, 29));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Maderería Tiscareño");
-        backgroundInicio.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 513, 105));
+        backgroundInicio.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 50, 710, 105));
 
         txtUsuario.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         backgroundInicio.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 290, 310, 50));

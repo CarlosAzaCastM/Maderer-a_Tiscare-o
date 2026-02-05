@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Usuario;
 import modelo.Venta;
@@ -192,7 +193,8 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         // Ocultar todos primero
         jComboBoxMesesVentas.setVisible(false);
         jComboBoxSemanasVentas.setVisible(false);
-        jDateChooserVentas.setVisible(false);
+        jDateChooserInicio.setVisible(false);
+        jDateChooserFinal.setVisible(false);
         txtFolioTicketVentas.setVisible(false);
         labelFolioTicket.setVisible(false);
         
@@ -205,7 +207,10 @@ public class PanelReporteVentas extends javax.swing.JPanel {
                 jComboBoxSemanasVentas.setVisible(true);
                 break;
             case "Fecha":
-                jDateChooserVentas.setVisible(true);
+                jLabelInicio.setVisible(true);
+                jLabelFin.setVisible(true);
+                jDateChooserInicio.setVisible(true);
+                jDateChooserFinal.setVisible(true);
                 break;
             case "Folio":
                 txtFolioTicketVentas.setVisible(true);
@@ -237,17 +242,16 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         actualizarTabla(ventas);
     }
     
-    private void cargarVentasPorFechaExacta(Date fecha) {
+    private void cargarVentasPorFechaExacta(Date fechaI, Date fechaF) {
         Calendar calendario = Calendar.getInstance();
-        calendario.setTime(fecha);
         
-        // Establecer inicio del día
+        calendario.setTime(fechaI);
         calendario.set(Calendar.HOUR_OF_DAY, 0);
         calendario.set(Calendar.MINUTE, 0);
         calendario.set(Calendar.SECOND, 0);
         Date fechaInicio = calendario.getTime();
         
-        // Establecer fin del día
+        calendario.setTime(fechaF);
         calendario.set(Calendar.HOUR_OF_DAY, 23);
         calendario.set(Calendar.MINUTE, 59);
         calendario.set(Calendar.SECOND, 59);
@@ -344,7 +348,10 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     private void logicaInicial() {
         jComboBoxMesesVentas.setVisible(false);
         jComboBoxSemanasVentas.setVisible(false);
-        jDateChooserVentas.setVisible(false);
+        jDateChooserInicio.setVisible(false);
+        jDateChooserFinal.setVisible(false);
+        jLabelInicio.setVisible(false);
+        jLabelFin.setVisible(false);
         txtFolioTicketVentas.setVisible(false);
         labelFolioTicket.setVisible(false);
     }
@@ -361,7 +368,7 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         labelFolioTicket = new javax.swing.JLabel();
         jComboBoxMesesVentas = new javax.swing.JComboBox<>();
         jComboBoxSemanasVentas = new javax.swing.JComboBox<>();
-        jDateChooserVentas = new com.toedter.calendar.JDateChooser();
+        jDateChooserInicio = new com.toedter.calendar.JDateChooser();
         btnFiltrarVentas = new javax.swing.JPanel();
         jLabelCancelar1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -370,6 +377,9 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         jLabelCancelar = new javax.swing.JLabel();
         btnCompletarVenta = new javax.swing.JPanel();
         jLabelCompletar = new javax.swing.JLabel();
+        jLabelInicio = new javax.swing.JLabel();
+        jLabelFin = new javax.swing.JLabel();
+        jDateChooserFinal = new com.toedter.calendar.JDateChooser();
 
         jPanelVentas.setBackground(new java.awt.Color(62, 44, 32));
         jPanelVentas.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -395,7 +405,7 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         jComboBoxSemanasVentas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jComboBoxSemanasVentas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Últimos 7 dias", "Últimos 14 dias" }));
         jPanelVentas.add(jComboBoxSemanasVentas, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 20, 160, 30));
-        jPanelVentas.add(jDateChooserVentas, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 20, 180, 30));
+        jPanelVentas.add(jDateChooserInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 180, 30));
 
         btnFiltrarVentas.setBackground(new java.awt.Color(124, 146, 221));
         btnFiltrarVentas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -511,6 +521,17 @@ public class PanelReporteVentas extends javax.swing.JPanel {
 
         jPanelVentas.add(btnCompletarVenta, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 340, 170, -1));
 
+        jLabelInicio.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelInicio.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelInicio.setText("Inicio:");
+        jPanelVentas.add(jLabelInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 20, 80, -1));
+
+        jLabelFin.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelFin.setForeground(new java.awt.Color(241, 241, 241));
+        jLabelFin.setText("Fin:");
+        jPanelVentas.add(jLabelFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 50, -1));
+        jPanelVentas.add(jDateChooserFinal, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, 180, 30));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -563,11 +584,16 @@ public class PanelReporteVentas extends javax.swing.JPanel {
             break;
 
             case "Fecha":
-            Date fechaSeleccionada = jDateChooserVentas.getDate();
-            if (fechaSeleccionada != null) {
-                cargarVentasPorFechaExacta(fechaSeleccionada);
+            Date fechaSeleccionada = jDateChooserInicio.getDate();
+            Date fechaSeleccionadaFin = jDateChooserFinal.getDate();
+            if (fechaSeleccionada != null && fechaSeleccionadaFin != null) {
+                if (fechaSeleccionada.after(fechaSeleccionadaFin)) {
+                        JOptionPane.showMessageDialog(this, "La fecha de inicio no puede ser posterior a la final.");
+                    } else {
+                    cargarVentasPorFechaExacta(fechaSeleccionada, fechaSeleccionadaFin);
+                }      
             } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha.");
+                javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha en los dos calendarios.");
             }
             break;
 
@@ -685,10 +711,13 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> jComboBoxMesesVentas;
     private javax.swing.JComboBox<String> jComboBoxSemanasVentas;
     private javax.swing.JComboBox<String> jComboBoxTipoFiltroVentas;
-    private com.toedter.calendar.JDateChooser jDateChooserVentas;
+    private com.toedter.calendar.JDateChooser jDateChooserFinal;
+    private com.toedter.calendar.JDateChooser jDateChooserInicio;
     private javax.swing.JLabel jLabelCancelar;
     private javax.swing.JLabel jLabelCancelar1;
     private javax.swing.JLabel jLabelCompletar;
+    private javax.swing.JLabel jLabelFin;
+    private javax.swing.JLabel jLabelInicio;
     private javax.swing.JPanel jPanelVentas;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableVentas;
