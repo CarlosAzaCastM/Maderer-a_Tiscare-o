@@ -79,6 +79,8 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
             // Calcular total de gastos
             double totalGastos = reporteDAO.calcularTotalGastos(fechaInicio, fechaFin, usuario.getIdUsuario());
             
+            double totalVentas = reporteDAO.calcularTotalVentas(fechaInicio, fechaFin, usuario.getIdUsuario());
+            
             // Calcular ganancia neta
             double gananciaNeta = gananciaBruta - totalGastos;
             
@@ -89,6 +91,7 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
             jLabelGananciaBruta.setText(formatter.format(gananciaBruta));
             jLabelGastos.setText(formatter.format(totalGastos));
             jLabelGananciaNeta.setText(formatter.format(gananciaNeta));
+            jLabelVentaTotal.setText(formatter.format(totalVentas));
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al calcular ganancias: " + e.getMessage(), 
@@ -215,6 +218,8 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabelInicio = new javax.swing.JLabel();
         jLabelFin = new javax.swing.JLabel();
         jDateChooserFin = new com.toedter.calendar.JDateChooser();
+        jLabel6 = new javax.swing.JLabel();
+        jLabelVentaTotal = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -270,43 +275,43 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabel1.setForeground(new java.awt.Color(245, 245, 245));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Ganancia Neta");
-        jPanelGastos.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 400, 220, 70));
+        jPanelGastos.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 440, 220, 70));
 
         jLabelGananciaNeta.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabelGananciaNeta.setForeground(new java.awt.Color(245, 245, 245));
         jLabelGananciaNeta.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabelGananciaNeta.setText("$");
-        jPanelGastos.add(jLabelGananciaNeta, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 400, 390, 70));
+        jPanelGastos.add(jLabelGananciaNeta, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 440, 390, 70));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(243, 117, 117));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("-");
-        jPanelGastos.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 300, 40, 20));
+        jPanelGastos.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 360, 40, 20));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(245, 245, 245));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("Gastos");
-        jPanelGastos.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 280, 220, 70));
+        jPanelGastos.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 340, 220, 70));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(245, 245, 245));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Ganancia Bruta");
-        jPanelGastos.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 170, 220, 70));
+        jLabel5.setText("Ventas Totales");
+        jPanelGastos.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 110, 220, 70));
 
         jLabelGananciaBruta.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabelGananciaBruta.setForeground(new java.awt.Color(245, 245, 245));
         jLabelGananciaBruta.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabelGananciaBruta.setText("$");
-        jPanelGastos.add(jLabelGananciaBruta, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 170, 380, 70));
+        jPanelGastos.add(jLabelGananciaBruta, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 250, 380, 70));
 
         jLabelGastos.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabelGastos.setForeground(new java.awt.Color(245, 245, 245));
         jLabelGastos.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabelGastos.setText("$");
-        jPanelGastos.add(jLabelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 280, 380, 70));
+        jPanelGastos.add(jLabelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 340, 380, 70));
 
         jLabelInicio.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabelInicio.setForeground(new java.awt.Color(241, 241, 241));
@@ -318,6 +323,18 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabelFin.setText("Fin:");
         jPanelGastos.add(jLabelFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 40, 50, -1));
         jPanelGastos.add(jDateChooserFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, 180, 30));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(245, 245, 245));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel6.setText("Ganancia Bruta");
+        jPanelGastos.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 250, 220, 70));
+
+        jLabelVentaTotal.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabelVentaTotal.setForeground(new java.awt.Color(245, 245, 245));
+        jLabelVentaTotal.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabelVentaTotal.setText("$");
+        jPanelGastos.add(jLabelVentaTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 380, 70));
 
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-21, -3, 1280, 610));
     }// </editor-fold>//GEN-END:initComponents
@@ -347,12 +364,14 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabelFiltrarGastos;
     private javax.swing.JLabel jLabelFin;
     private javax.swing.JLabel jLabelGananciaBruta;
     private javax.swing.JLabel jLabelGananciaNeta;
     private javax.swing.JLabel jLabelGastos;
     private javax.swing.JLabel jLabelInicio;
+    private javax.swing.JLabel jLabelVentaTotal;
     private javax.swing.JPanel jPanelGastos;
     // End of variables declaration//GEN-END:variables
 }
