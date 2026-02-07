@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modelo.DetalleVenta;
 import modelo.Usuario;
 import modelo.Venta;
 
@@ -20,6 +21,8 @@ public class PanelReporteVentas extends javax.swing.JPanel {
     
     // 1. NUEVA VARIABLE DE CONTROL
     private boolean datosCargados = false; 
+    private modelo.Venta venta = null;
+    private List<modelo.DetalleVentaHistorico> productos = new ArrayList<>();
 
     public PanelReporteVentas(Usuario usuario, JFrameReportes frame) {
         initComponents();
@@ -380,6 +383,8 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         jLabelInicio = new javax.swing.JLabel();
         jLabelFin = new javax.swing.JLabel();
         jDateChooserFinal = new com.toedter.calendar.JDateChooser();
+        btnImprimir = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
         jPanelVentas.setBackground(new java.awt.Color(62, 44, 32));
         jPanelVentas.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -532,23 +537,49 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         jPanelVentas.add(jLabelFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 50, -1));
         jPanelVentas.add(jDateChooserFinal, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, 180, 30));
 
+        btnImprimir.setBackground(new java.awt.Color(62, 44, 32));
+        btnImprimir.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnImprimirMouseClicked(evt);
+            }
+        });
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/vista/imgs/impresora.png"))); // NOI18N
+
+        javax.swing.GroupLayout btnImprimirLayout = new javax.swing.GroupLayout(btnImprimir);
+        btnImprimir.setLayout(btnImprimirLayout);
+        btnImprimirLayout.setHorizontalGroup(
+            btnImprimirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnImprimirLayout.createSequentialGroup()
+                .addContainerGap(35, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(31, 31, 31))
+        );
+        btnImprimirLayout.setVerticalGroup(
+            btnImprimirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnImprimirLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(14, 14, 14))
+        );
+
+        jPanelVentas.add(btnImprimir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1070, 110, 130, 70));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 1262, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addComponent(jPanelVentas, javax.swing.GroupLayout.PREFERRED_SIZE, 1256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 6, Short.MAX_VALUE)))
+                .addComponent(jPanelVentas, javax.swing.GroupLayout.DEFAULT_SIZE, 1262, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 602, Short.MAX_VALUE)
+            .addGap(0, 618, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addComponent(jPanelVentas, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 6, Short.MAX_VALUE)))
+                    .addComponent(jPanelVentas, javax.swing.GroupLayout.PREFERRED_SIZE, 618, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -703,16 +734,42 @@ public class PanelReporteVentas extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnCompletarVentaMouseClicked
 
+    private void btnImprimirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnImprimirMouseClicked
+        dao.DetalleVentaDAO dao = new dao.DetalleVentaDAO();
+        int filaSeleccionada = jTableVentas.getSelectedRow();
+
+        if (filaSeleccionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una venta de la tabla.");
+            return;
+        }
+        // Obtener el folio de la venta seleccionada (columna 0)
+        int folio = (int) tableModel.getValueAt(filaSeleccionada, 0);
+        venta = ventaDao.obtenerVentaPorFolio(folio);
+        
+        productos = dao.obtenerDetallesPorVenta(venta.getIdVenta());
+        
+        
+        try {
+            modelo.ImpresionTicket printer = new modelo.ImpresionTicket();
+            printer.imprimirTicketHistorico(venta, productos, usuarioActual);
+        } catch(Exception ex) { 
+            System.out.println("Error impresión: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnImprimirMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel btnCancelarVenta;
     private javax.swing.JPanel btnCompletarVenta;
     private javax.swing.JPanel btnFiltrarVentas;
+    private javax.swing.JPanel btnImprimir;
     private javax.swing.JComboBox<String> jComboBoxMesesVentas;
     private javax.swing.JComboBox<String> jComboBoxSemanasVentas;
     private javax.swing.JComboBox<String> jComboBoxTipoFiltroVentas;
     private com.toedter.calendar.JDateChooser jDateChooserFinal;
     private com.toedter.calendar.JDateChooser jDateChooserInicio;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelCancelar;
     private javax.swing.JLabel jLabelCancelar1;
     private javax.swing.JLabel jLabelCompletar;

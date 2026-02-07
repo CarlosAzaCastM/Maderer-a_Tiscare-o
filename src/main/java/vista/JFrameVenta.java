@@ -772,11 +772,7 @@ public class JFrameVenta extends javax.swing.JFrame {
 
     private void btnRegistrarVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrarVentaMouseClicked
     if (ventaFinalizada != null) {
-         try {
-            System.out.println("=== IMPRESIÓN (venta ya registrada) ===");
-            System.out.println("Folio: " + ventaFinalizada.getFolioTicket());
-            System.out.println("Productos en carrito: " + carrito.size());
-            
+        try {
             modelo.ImpresionTicket printer = new modelo.ImpresionTicket();
             printer.imprimirTicket(ventaFinalizada, carrito, usuarioActual);
         } catch(Exception ex) { 

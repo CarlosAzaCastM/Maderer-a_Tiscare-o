@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.print.Doc;
 import javax.print.DocFlavor;
@@ -19,6 +20,35 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.JOptionPane;
 
 public class ImpresionTicket {
+    
+    public void imprimirTicketHistorico(Venta venta, List<DetalleVentaHistorico> historico, Usuario vendedor) {
+        // 1. Crear una lista compatible con el método original
+        List<DetalleVenta> listaConvertida = new ArrayList<>();
+
+        // 2. Recorrer el histórico y convertir cada objeto
+        for (DetalleVentaHistorico h : historico) {
+            DetalleVenta d = new DetalleVenta();
+            
+            // Mapear los datos (Pasar de Historico a DetalleVenta)
+            d.setCantidad(h.getCantidad());
+            // Nota: En Historico se llama NombreProducto, en DetalleVenta se llama Nombre
+            d.setNombre(h.getNombreProducto()); 
+            d.setMedida(h.getMedida());
+            d.setClase(h.getClase());
+            d.setGrosor(h.getGrosor());
+            
+            // Nota: En Historico es Importe, en DetalleVenta es Subtotal
+            d.setSubtotal(h.getImporte()); 
+            
+            // El precio unitario histórico
+            d.setPrecioVenta(h.getPrecioVentaHistorico());
+
+            listaConvertida.add(d);
+        }
+
+        // 3. Llamar al método original de impresión con la lista convertida
+        this.imprimirTicket(venta, listaConvertida, vendedor);
+    }
 
     public void imprimirTicket(Venta venta, List<DetalleVenta> productos, Usuario vendedor) {
         

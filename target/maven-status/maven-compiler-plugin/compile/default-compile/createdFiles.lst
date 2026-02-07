@@ -99,6 +99,7 @@ vista\JFrameInventario$3.class
 vista\PanelReporteVentas$2.class
 modelo\EntradaInventario.class
 dao\ReporteDAO.class
+vista\PanelReporteVentas$7.class
 modelo\Venta.class
 modelo\Ganancia.class
 vista\FormularioProducto$7$1.class
