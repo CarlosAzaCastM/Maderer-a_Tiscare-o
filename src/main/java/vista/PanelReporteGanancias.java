@@ -40,6 +40,8 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabelGananciaBruta.setText("$0.00");
         jLabelGastos.setText("$0.00");
         jLabelGananciaNeta.setText("$0.00");
+        jLabelCostoCompra.setText("$0.00");
+        jLabelVentaTotal.setText("$0.00");
     }
     
     private void cambiarVisibilidadFiltros() {
@@ -71,31 +73,36 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
     private void calcularGanancias(Date fechaInicio, Date fechaFin) {
         try {
             ReporteDAO reporteDAO = new ReporteDAO();
-            GastoDAO gastoDAO = new GastoDAO();
             
-            // Calcular ganancia bruta
-            double gananciaBruta = reporteDAO.calcularGananciaBruta(fechaInicio, fechaFin, usuario.getIdUsuario());
-            
-            // Calcular total de gastos
-            double totalGastos = reporteDAO.calcularTotalGastos(fechaInicio, fechaFin, usuario.getIdUsuario());
-            
+            // 1. Obtenemos el TOTAL DE VENTAS (La verdad absoluta de cuánto dinero entró)
             double totalVentas = reporteDAO.calcularTotalVentas(fechaInicio, fechaFin, usuario.getIdUsuario());
             
-            // Calcular ganancia neta
+            // 2. Obtenemos el TOTAL DE COSTO/MATERIAL (La verdad absoluta de cuánto costó lo vendido)
+            double totalCostoCompra = reporteDAO.calcularTotalCostos(fechaInicio, fechaFin, usuario.getIdUsuario());
+            
+            // 3. CALCULO EN JAVA: Ganancia Bruta = Ventas - Costo
+            // Al hacerlo así, forzamos matemáticamente a que la resta sea exacta a lo que ve el usuario
+            double gananciaBruta = totalVentas - totalCostoCompra; 
+            
+            // 4. Calcular total de gastos
+            double totalGastos = reporteDAO.calcularTotalGastos(fechaInicio, fechaFin, usuario.getIdUsuario());
+            
+            // 5. Calcular Ganancia Neta
             double gananciaNeta = gananciaBruta - totalGastos;
             
-            // Formatear los números como moneda
+            // Formatear
             NumberFormat formatter = NumberFormat.getCurrencyInstance();
             
             // Actualizar etiquetas
-            jLabelGananciaBruta.setText(formatter.format(gananciaBruta));
+            jLabelVentaTotal.setText(formatter.format(totalVentas));
+            jLabelCostoCompra.setText(formatter.format(totalCostoCompra));
+            jLabelGananciaBruta.setText(formatter.format(gananciaBruta)); // Ahora sí cuadrará
             jLabelGastos.setText(formatter.format(totalGastos));
             jLabelGananciaNeta.setText(formatter.format(gananciaNeta));
-            jLabelVentaTotal.setText(formatter.format(totalVentas));
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al calcular ganancias: " + e.getMessage(), 
-                                         "Error", JOptionPane.ERROR_MESSAGE);
+                                     "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -220,6 +227,9 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jDateChooserFin = new com.toedter.calendar.JDateChooser();
         jLabel6 = new javax.swing.JLabel();
         jLabelVentaTotal = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabelCostoCompra = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -287,7 +297,7 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabel3.setForeground(new java.awt.Color(243, 117, 117));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("-");
-        jPanelGastos.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 360, 40, 20));
+        jPanelGastos.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 200, 40, 20));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(245, 245, 245));
@@ -336,6 +346,24 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
         jLabelVentaTotal.setText("$");
         jPanelGastos.add(jLabelVentaTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 380, 70));
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(245, 245, 245));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel7.setText("Material");
+        jPanelGastos.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 180, 220, 70));
+
+        jLabelCostoCompra.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        jLabelCostoCompra.setForeground(new java.awt.Color(245, 245, 245));
+        jLabelCostoCompra.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabelCostoCompra.setText("$");
+        jPanelGastos.add(jLabelCostoCompra, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 180, 380, 70));
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(243, 117, 117));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("-");
+        jPanelGastos.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 360, 40, 20));
+
         add(jPanelGastos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-21, -3, 1280, 610));
     }// </editor-fold>//GEN-END:initComponents
 
@@ -365,6 +393,9 @@ public class PanelReporteGanancias extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabelCostoCompra;
     private javax.swing.JLabel jLabelFiltrarGastos;
     private javax.swing.JLabel jLabelFin;
     private javax.swing.JLabel jLabelGananciaBruta;
