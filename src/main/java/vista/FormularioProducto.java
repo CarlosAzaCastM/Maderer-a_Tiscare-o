@@ -23,20 +23,78 @@ public class FormularioProducto extends javax.swing.JDialog {
         this.padre = (JFrameInventario) parent;
         initComponents();
         this.setLocationRelativeTo(null);
+        inicializarFormulario();
+    }
+    
+    private void inicializarFormulario() {
+        // 1. Cargar los productos en el ComboBox
+        ProductoDAO productoDAO = new ProductoDAO();
+        List<Producto> listaProductos = productoDAO.listarProductos();
+
+        jComboBoxProductos.removeAllItems(); // Limpiar antes de llenar
+
+        for (Producto p : listaProductos) {
+            // Aquí agregamos el nombre. 
+            // NOTA: Si quieres manejar objetos completos, el modelo Producto debe tener toString()
+            // Por ahora usaremos el nombre string para compatibilidad con tu código.
+            jComboBoxProductos.addItem(p.getNombreProducto());
+        }
+
+        // 2. Configurar el estado inicial de la vista
+        alternarVisibilidad();
+
+        // 3. Agregar el "Escuchador" (Listener) al Checkbox
+        jCheckBoxNuevoProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                alternarVisibilidad();
+            }
+        });
+    }
+
+    private void alternarVisibilidad() {
+        boolean esNuevo = jCheckBoxNuevoProducto.isSelected();
+
+        // Si es nuevo: Muestra caja de texto, oculta combo
+        txtProducto.setVisible(esNuevo);
+        txtProducto.setEnabled(esNuevo); // Opcional: deshabilitar para asegurar
+
+        // Si no es nuevo: Oculta caja de texto, muestra combo
+        jComboBoxProductos.setVisible(!esNuevo);
+        jComboBoxProductos.setEnabled(!esNuevo);
+
+        // Limpieza opcional para evitar confusiones visuales
+        if (esNuevo) {
+            txtProducto.requestFocus();
+        } else {
+            jComboBoxProductos.requestFocus();
+        }
     }
 
     private void guardarProducto() {
         try {
-            // 1. Validar campos
-            String nombreProducto = txtProducto.getText().trim();
-            if (nombreProducto.isEmpty() || txtMedida.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Nombre y Medida son obligatorios.");
-                return;
+            // 1. Validar y OBTENER EL NOMBRE según el Checkbox
+            String nombreProducto;
+            boolean esNuevoProducto = jCheckBoxNuevoProducto.isSelected();
+
+            if (esNuevoProducto) {
+                // Si es nuevo, tomamos lo que escribió en el TextField
+                nombreProducto = txtProducto.getText().trim();
+            } else {
+                // Si ya existe, tomamos lo seleccionado en el ComboBox
+                if (jComboBoxProductos.getSelectedItem() != null) {
+                    nombreProducto = jComboBoxProductos.getSelectedItem().toString();
+                } else {
+                    nombreProducto = "";
+                }
             }
 
+            // Validación común
+            if (nombreProducto.isEmpty() || txtMedida.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "El nombre del producto y la Medida son obligatorios.");
+                return;
+            }
             // 2. Determinar la acción y obtener el ID del Producto Padre
             int idPadre;
-            boolean esNuevoProducto = jCheckBoxNuevoProducto.isSelected(); // Lee el estado del CheckBox
             
             VarianteDAO varianteDAO = new VarianteDAO();
             
@@ -75,7 +133,7 @@ public class FormularioProducto extends javax.swing.JDialog {
             
             // 3. Setear Datos de la Variante (Esto es igual que tu lógica anterior)
             v.setClase(txtClase.getText().toUpperCase());
-            v.setMedida(txtMedida.getText());
+            v.setMedida(txtMedida.getText().toLowerCase());
             v.setGrosor(txtGrosor.getText());
             
             // Calcular Pies
@@ -171,19 +229,23 @@ public class FormularioProducto extends javax.swing.JDialog {
         btnClose = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jCheckBoxNuevoProducto = new javax.swing.JCheckBox();
+        jComboBoxProductos = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(28, 28, 28));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(243, 243, 243));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Nuevo Producto");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(249, 24, 262, 39));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(243, 243, 243));
         jLabel2.setText("Cant");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 127, 65, -1));
 
         txtCant.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtCant.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -191,32 +253,40 @@ public class FormularioProducto extends javax.swing.JDialog {
                 txtCantKeyTyped(evt);
             }
         });
+        jPanel1.add(txtCant, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 165, 60, 33));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(243, 243, 243));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Producto");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(89, 127, 119, -1));
 
         txtProducto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel1.add(txtProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 170, 119, 33));
 
         txtClase.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel1.add(txtClase, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 165, 81, 33));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(243, 243, 243));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Clase");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(214, 127, 86, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(243, 243, 243));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Medida");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(306, 126, 86, -1));
 
         txtMedida.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jPanel1.add(txtMedida, new org.netbeans.lib.awtextra.AbsoluteConstraints(306, 165, 94, 33));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(243, 243, 243));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Grosor");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(406, 127, 86, -1));
 
         txtGrosor.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtGrosor.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -224,6 +294,7 @@ public class FormularioProducto extends javax.swing.JDialog {
                 txtGrosorKeyTyped(evt);
             }
         });
+        jPanel1.add(txtGrosor, new org.netbeans.lib.awtextra.AbsoluteConstraints(406, 165, 94, 33));
 
         txtCostoC.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtCostoC.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -231,16 +302,19 @@ public class FormularioProducto extends javax.swing.JDialog {
                 txtCostoCKeyTyped(evt);
             }
         });
+        jPanel1.add(txtCostoC, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 165, 94, 33));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(243, 243, 243));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Costo C");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 127, 86, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(243, 243, 243));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("Precio V");
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 127, 94, -1));
 
         txtCostoV.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtCostoV.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -248,6 +322,7 @@ public class FormularioProducto extends javax.swing.JDialog {
                 txtCostoVKeyTyped(evt);
             }
         });
+        jPanel1.add(txtCostoV, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 165, 94, 33));
 
         btnCrear.setBackground(new java.awt.Color(53, 146, 53));
         btnCrear.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -263,6 +338,8 @@ public class FormularioProducto extends javax.swing.JDialog {
         jLabel9.setText("Crear");
         jLabel9.setToolTipText("");
         btnCrear.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 10, -1, -1));
+
+        jPanel1.add(btnCrear, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 253, 241, 45));
 
         btnClose.setBackground(new java.awt.Color(28, 28, 28));
         btnClose.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -291,113 +368,17 @@ public class FormularioProducto extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
+        jPanel1.add(btnClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 16, -1, -1));
+
         jCheckBoxNuevoProducto.setBackground(new java.awt.Color(28, 28, 28));
         jCheckBoxNuevoProducto.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jCheckBoxNuevoProducto.setForeground(new java.awt.Color(243, 243, 243));
         jCheckBoxNuevoProducto.setText("Nuevo Producto");
         jCheckBoxNuevoProducto.setOpaque(true);
+        jPanel1.add(jCheckBoxNuevoProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(273, 84, -1, -1));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(179, 179, 179)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(201, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(txtCant, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(11, 11, 11))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtProducto, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtClase, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtGrosor, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtCostoC, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtCostoV)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnCrear, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jCheckBoxNuevoProducto, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addGap(256, 256, 256))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(jCheckBoxNuevoProducto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCostoC, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtCant, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(38, 38, 38)
-                                .addComponent(txtProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel4)
-                            .addGap(39, 39, 39))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel5)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtClase, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtGrosor, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCostoV, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(44, 44, 44)
-                .addComponent(btnCrear, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(96, 96, 96))
-        );
+        jComboBoxProductos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel1.add(jComboBoxProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(89, 164, 119, 34));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -511,6 +492,7 @@ public class FormularioProducto extends javax.swing.JDialog {
     private javax.swing.JPanel btnClose;
     private javax.swing.JPanel btnCrear;
     private javax.swing.JCheckBox jCheckBoxNuevoProducto;
+    private javax.swing.JComboBox<String> jComboBoxProductos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

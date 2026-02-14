@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import modelo.Producto;
 
 public class ProductoDAO {
@@ -33,5 +35,24 @@ public class ProductoDAO {
             System.out.println("Error al registrar producto padre: " + e.getMessage());
         }
         return idGenerado;
+    }
+    
+    public List<Producto> listarProductos() {
+        List<Producto> lista = new ArrayList<>();
+        String sql = "SELECT * FROM productos ORDER BY nombre ASC";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Producto p = new Producto();
+                p.setNombreProducto(rs.getString("nombre"));
+                lista.add(p);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al listar productos: " + e.getMessage());
+        }
+        return lista;
     }
 }

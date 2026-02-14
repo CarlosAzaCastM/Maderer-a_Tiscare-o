@@ -45,6 +45,7 @@ vista\JFrameInventario$1.class
 vista\JDialogEditarVenta.class
 vista\JFrameVenta$10.class
 vista\ActulizarProducto$4.class
+vista\FormularioProducto$8.class
 modelo\DetalleVenta.class
 vista\PanelReporteVentas$5.class
 vista\JFrameInventario.class
@@ -75,6 +76,7 @@ vista\ActulizarProducto$3.class
 vista\JFrameReportes.class
 vista\FormularioProducto.class
 vista\FormularioProducto$3.class
+vista\FormularioProducto$8$1.class
 vista\PanelReporteGastos$2.class
 vista\ActulizarProducto$6.class
 vista\JFrameCancelarVenta$2.class
@@ -102,7 +104,6 @@ dao\ReporteDAO.class
 vista\PanelReporteVentas$7.class
 modelo\Venta.class
 modelo\Ganancia.class
-vista\FormularioProducto$7$1.class
 vista\JFrameVenta$7.class
 vista\JDialogEditarGasto$4.class
 vista\Menu$3.class
